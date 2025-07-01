@@ -28,6 +28,21 @@ const user = Astro.locals.user;
               <p class="mt-1 text-sm text-gray-600">Dashboard</p>
             </div>
             <div class="flex items-center gap-4">
+              <nav class="flex gap-4">
+                <a 
+                  href="/record" 
+                  class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Grabar Nota
+                </a>
+                <a 
+                  href="/notes" 
+                  class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Mis Notas
+                </a>
+              </nav>
+              <div class="h-6 w-px bg-gray-300"></div>
               <span class="text-sm text-gray-700">
                 Hola, <strong>{user.name || user.email}</strong>
               </span>
@@ -42,8 +57,58 @@ const user = Astro.locals.user;
             Bienvenido a tu dashboard
           </h2>
           <p class="text-gray-600">
-            Aquí puedes ver y gestionar tu cuenta.
+            Graba notas de voz y transcríbelas automáticamente con IA.
           </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <a 
+            href="/record" 
+            class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200"
+          >
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900">Grabar Nota</h3>
+            </div>
+            <p class="text-gray-600">
+              Graba hasta 2 minutos de audio y transcríbelo automáticamente
+            </p>
+          </a>
+
+          <a 
+            href="/notes" 
+            class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200"
+          >
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900">Mis Notas</h3>
+            </div>
+            <p class="text-gray-600">
+              Ve, busca y gestiona todas tus notas transcritas
+            </p>
+          </a>
+
+          <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900">Estadísticas</h3>
+            </div>
+            <p class="text-gray-600">
+              Próximamente: Ve el progreso de tus notas y transcripciones
+            </p>
+          </div>
         </div>
 
         <div class="max-w-4xl">
