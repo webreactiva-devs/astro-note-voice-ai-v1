@@ -1,0 +1,57 @@
+---
+export const prerender = false;
+
+import "../styles/global.css";
+import { UserProfile } from "@/components/UserProfile";
+
+// Redirect if not logged in
+if (!Astro.locals.user) {
+  return Astro.redirect("/login");
+}
+
+const user = Astro.locals.user;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Dashboard - AI Astro Voice</title>
+  </head>
+  <body>
+    <div class="min-h-screen bg-gray-50">
+      <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center py-6">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900">AI Astro Voice</h1>
+              <p class="mt-1 text-sm text-gray-600">Dashboard</p>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="text-sm text-gray-700">
+                Hola, <strong>{user.name || user.email}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">
+            Bienvenido a tu dashboard
+          </h2>
+          <p class="text-gray-600">
+            Aquí puedes ver y gestionar tu cuenta.
+          </p>
+        </div>
+
+        <div class="max-w-4xl">
+          <UserProfile user={user} client:load />
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

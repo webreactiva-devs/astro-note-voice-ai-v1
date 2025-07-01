@@ -1,31 +1,113 @@
 ---
+export const prerender = false;
+
 import "../styles/global.css";
-// Component Imports
-import ActionButton from "../components/ActionButton.astro";
 
-import { Button } from "@/components/ui/button";
-
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+// Check if user is logged in
+const isLoggedIn = !!Astro.locals.user;
 ---
 
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>Astro + TailwindCSS</title>
+    <title>AI Astro Voice - Inicio</title>
   </head>
 
   <body>
-    <div class="grid place-items-center h-screen content-center">
-      <ActionButton>Tailwind ActionButton in Astro!</ActionButton>
-      <a href="/markdown-page" class="p-4 underline"
-        >Markdown is also supported...</a
-      >
-      <hr />
-      <Button>Button Shadcn/ui</Button>
+    <div class="min-h-screen bg-gray-50">
+      <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center py-6">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900">AI Astro Voice</h1>
+              <p class="mt-1 text-sm text-gray-600">Aplicación de voz con IA</p>
+            </div>
+            <div class="flex items-center gap-4">
+              {isLoggedIn ? (
+                <div class="flex items-center gap-4">
+                  <span class="text-sm text-gray-700">
+                    Hola, <strong>{Astro.locals.user?.name || Astro.locals.user?.email}</strong>
+                  </span>
+                  <a href="/dashboard" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Dashboard
+                  </a>
+                </div>
+              ) : (
+                <div class="flex items-center gap-4">
+                  <a href="/login" class="text-gray-700 hover:text-gray-900">
+                    Iniciar Sesión
+                  </a>
+                  <a href="/register" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Registrarse
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h2 class="text-4xl font-bold text-gray-900 mb-4">
+            Bienvenido a AI Astro Voice
+          </h2>
+          <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Una aplicación moderna construida con Astro, React y BetterAuth para demostrar autenticación completa.
+          </p>
+          
+          {!isLoggedIn && (
+            <div class="flex justify-center gap-4">
+              <a href="/register" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Comenzar Ahora
+              </a>
+              <a href="/login" class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Iniciar Sesión
+              </a>
+            </div>
+          )}
+        </div>
+
+        <div class="mt-16">
+          <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">
+            Características
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+              <div class="bg-blue-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-semibold text-gray-900 mb-2">Autenticación Segura</h4>
+              <p class="text-gray-600">Sistema de autenticación robusto con BetterAuth y libSQL</p>
+            </div>
+            
+            <div class="text-center">
+              <div class="bg-green-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-semibold text-gray-900 mb-2">Rendimiento Rápido</h4>
+              <p class="text-gray-600">Construido con Astro para máximo rendimiento y velocidad</p>
+            </div>
+            
+            <div class="text-center">
+              <div class="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
+                </svg>
+              </div>
+              <h4 class="text-lg font-semibold text-gray-900 mb-2">Diseño Moderno</h4>
+              <p class="text-gray-600">Interfaz elegante con Tailwind CSS y shadcn/ui</p>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   </body>
 </html>

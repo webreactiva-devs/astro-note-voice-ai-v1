@@ -2,7 +2,7 @@
 
 declare namespace App {
   interface Locals {
-    user: import("better-auth").User | null;
-    session: import("better-auth").Session | null;
+    user: import("better-auth/types").User | null;
+    session: import("better-auth/types").Session | null;
   }
 }
