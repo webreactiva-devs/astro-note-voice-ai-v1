@@ -1,10 +1,15 @@
-import { turso } from "@/lib/turso";
+import { database } from "@/lib/database";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async () => {
   try {
-    // Realiza una consulta simple para comprobar la conexión
-    await turso.execute("SELECT 1");
+    await database.batch(
+      [
+        "CREATE TABLE IF NOT EXISTS __temp (id INTEGER);",
+        "DROP TABLE IF EXISTS __temp;",
+      ],
+      "write"
+    );
     return new Response(
       JSON.stringify({ ok: true, message: "Conexión exitosa a Turso." }),
       {
