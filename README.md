@@ -1,13 +1,72 @@
-# Astro with Tailwind
+# AI ASTRO VOICE
 
-```sh
-npm create astro@latest -- --template with-tailwindcss
+{add more content here}
+
+## Configuración e inicialización de BetterAuth
+
+Este proyecto utiliza [BetterAuth](https://better-auth.dev/) para la autenticación por email y contraseña. Aquí te explicamos cómo inicializarlo y aplicar las migraciones necesarias en tu base de datos libSQL.
+
+### Instalación de dependencias
+
+Primero, instala las dependencias necesarias:
+
+```bash
+npm install better-auth @libsql/kysely-libsql @better-auth/cli
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/with-tailwindcss)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/with-tailwindcss)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/with-tailwindcss/devcontainer.json)
+---
 
-Astro comes with [Tailwind](https://tailwindcss.com) support out of the box. This example showcases how to style your Astro project with Tailwind.
+### Generación del secret para BetterAuth
 
-For complete setup instructions, please see our [Tailwind Integration Guide](https://docs.astro.build/en/guides/integrations-guide/tailwind).
+BetterAuth necesita un secret para firmar las sesiones. Puedes generar uno con el siguiente comando:
+
+```bash
+npx @better-auth/cli secret
+```
+
+Esto te generará una línea similar a esta:
+
+```bash
+BETTER_AUTH_SECRET=c01fdfc5c2b1847a9ddd3474d515732b0e3cf49d38163f97f93063bb5d0123a6
+```
+
+Añádela en tu archivo `.env`:
+
+```dotenv
+# Better Auth Configuration
+BETTER_AUTH_SECRET=c01fdfc5c2b1847a9ddd3474d515732b0e3cf49d38163f97f93063bb5d0123a6
+BETTER_AUTH_URL=http://localhost:4321
+```
+
+> La URL es solo para desarrollo local. Ajusta según tu entorno.
+
+---
+
+### Aplicación de migraciones
+
+BetterAuth incluye su propio sistema de migraciones para crear las tablas necesarias (usuarios, sesiones, etc.) dentro de tu base de datos libSQL.
+
+Para ver un resumen previo de los cambios que se van a aplicar:
+
+```bash
+npx @better-auth/cli migrate
+```
+
+Si quieres aplicar directamente las migraciones sin confirmación interactiva:
+
+```bash
+npx @better-auth/cli migrate --y
+```
+
+Esto creará las tablas necesarias como `users`, con campos como `name`, `email`, `emailVerified`, `image`, `createdAt` y `updatedAt`.
+
+---
+
+### Resumen rápido de comandos
+
+| Acción                     | Comando                                                          |
+| -------------------------- | ---------------------------------------------------------------- |
+| Instalar dependencias      | `npm install better-auth @libsql/kysely-libsql @better-auth/cli` |
+| Generar secret             | `npx @better-auth/cli secret`                                    |
+| Ver migraciones pendientes | `npx @better-auth/cli migrate`                                   |
+| Aplicar migraciones        | `npx @better-auth/cli migrate --y`                               |
