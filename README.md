@@ -70,3 +70,97 @@ Esto creará las tablas necesarias como `users`, con campos como `name`, `email`
 | Generar secret             | `npx @better-auth/cli secret`                                    |
 | Ver migraciones pendientes | `npx @better-auth/cli migrate`                                   |
 | Aplicar migraciones        | `npx @better-auth/cli migrate --y`                               |
+
+---
+
+## Sistema de Migraciones Personalizadas
+
+Además de las migraciones de BetterAuth, este proyecto incluye un sistema de migraciones incrementales para gestionar cambios en la base de datos de manera ordenada.
+
+### Estructura de migraciones
+
+Las migraciones se almacenan en `database/migrations/` con el formato:
+```
+001_create_notes_table.sql
+002_add_user_preferences.sql
+003_add_indexes.sql
+```
+
+### Comandos de migración
+
+```bash
+# Ejecutar migraciones pendientes
+npm run migrate
+
+# Ver estado de migraciones
+npm run migrate:status
+
+# Limpiar registro de migración específica (para re-ejecutar)
+node scripts/clean-migration.js <filename>
+
+# Ejecutar directamente con Node.js
+node scripts/migrate.js
+node scripts/migrate.js status
+```
+
+### Crear una nueva migración
+
+1. Crea un archivo SQL en `database/migrations/` con formato `XXX_description.sql`
+2. Utiliza numeración secuencial (001, 002, 003...)
+3. Incluye comentarios descriptivos en el archivo
+
+Ejemplo de migración:
+```sql
+-- Migration: Add user preferences table
+-- Created: 2025-07-02
+-- Description: Stores user configuration and preferences
+
+CREATE TABLE IF NOT EXISTS user_preferences (
+  id TEXT PRIMARY KEY,
+  userId TEXT NOT NULL,
+  theme TEXT DEFAULT 'light',
+  language TEXT DEFAULT 'es',
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_preferences_userId ON user_preferences(userId);
+```
+
+### Características del sistema
+
+- ✅ **Incremental**: Solo ejecuta migraciones no aplicadas
+- ✅ **Tracking**: Registra migraciones ejecutadas en `migrations_log`
+- ✅ **Checksum**: Detecta cambios en archivos ya ejecutados
+- ✅ **Compatible**: Funciona con SQLite local y Turso cloud
+- ✅ **Limpieza**: Herramienta para limpiar registros y re-ejecutar migraciones
+- ✅ **Multi-entorno**: Respeta la configuración `USE_LOCAL_DB`
+
+### Solución de problemas
+
+Si una migración falla o necesitas re-ejecutarla:
+
+```bash
+# 1. Limpiar el registro de la migración fallida
+node scripts/clean-migration.js 001_create_notes_table.sql
+
+# 2. Verificar que está marcada como pendiente
+npm run migrate:status
+
+# 3. Ejecutar nuevamente
+npm run migrate
+```
+
+**Notas importantes:**
+- El sistema respeta `USE_LOCAL_DB` - cambia entre SQLite local y Turso
+- Evita comentarios inline en SQL (`--`) ya que pueden romper el parsing
+- Cada migración debe ser idempotente (usar `IF NOT EXISTS`)
+
+### Resumen de comandos completos
+
+| Acción                          | Comando                                 |
+| ------------------------------- | --------------------------------------- |
+| Migraciones BetterAuth          | `npx @better-auth/cli migrate --y`     |
+| Migraciones personalizadas      | `npm run migrate`                       |
+| Estado migraciones personalizadas | `npm run migrate:status`              |
+| Limpiar migración específica    | `node scripts/clean-migration.js <file>` |

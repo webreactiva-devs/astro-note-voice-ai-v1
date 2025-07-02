@@ -50,6 +50,9 @@
 - [x] Crear tabla `notes` en base de datos ✅ COMPLETADO
   - [x] Migración de esquema de base de datos
   - [x] Definir relaciones con tabla `users`
+  - [x] Sistema de migraciones incrementales implementado
+  - [x] Herramienta de limpieza de migraciones
+  - [x] Compatibilidad con SQLite local y Turso cloud
 
 ### 📊 Dashboard y Visualización
 - [ ] Mejorar dashboard de notas
@@ -131,3 +134,22 @@
 - **Límite de 2 minutos**: Para mantener costos de API bajo control
 - **Priorizar feedback visual**: Especialmente importante para grabación y transcripción
 - **Seguridad first**: Todas las rutas deben estar protegidas apropiadamente
+
+## Sistema de Migraciones
+
+### ✅ Implementado
+- Sistema de migraciones incrementales con tracking en `migrations_log`
+- Compatibilidad dual: SQLite local y Turso cloud
+- Herramienta de limpieza para re-ejecutar migraciones fallidas
+- Comandos npm: `migrate` y `migrate:status`
+- Detección automática de entorno via `USE_LOCAL_DB`
+
+### 🛠️ Herramientas disponibles
+- `npm run migrate` - Ejecutar migraciones pendientes
+- `npm run migrate:status` - Ver estado actual
+- `node scripts/clean-migration.js <file>` - Limpiar registro específico
+
+### ⚠️ Consideraciones técnicas
+- Evitar comentarios inline en SQL para compatibilidad con parser
+- Usar `IF NOT EXISTS` para migraciones idempotentes
+- Sistema funciona sin transacciones para compatibilidad con Turso

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS notes (
   userId TEXT NOT NULL,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
-  tags TEXT, -- JSON string with array of tags
+  tags TEXT,
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
