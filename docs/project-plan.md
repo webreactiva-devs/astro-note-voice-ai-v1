@@ -31,10 +31,11 @@
   - [x] Procesar archivos de audio (FormData)
   - [x] Manejar respuesta de transcripción
   - [x] Gestión de errores y timeouts
-- [ ] Implementar UI de transcripción
-  - [ ] Modal/Popup para mostrar transcripción
-  - [ ] Editor de texto para corregir transcripción
-  - [ ] Estados de carga durante transcripción
+- [x] Implementar UI de transcripción ✅ COMPLETADO
+  - [x] Modal/Popup para mostrar transcripción
+  - [x] Editor de texto para corregir transcripción
+  - [x] Estados de carga durante transcripción
+  - [x] Integración con endpoint /api/notes para guardar
 
 ### 💾 Gestión de Notas
 - [x] Crear endpoint `/api/notes` (POST) ✅ COMPLETADO
@@ -55,26 +56,28 @@
   - [x] Compatibilidad con SQLite local y Turso cloud
 
 ### 📊 Dashboard y Visualización
-- [ ] Mejorar dashboard de notas
-  - [ ] Lista de notas ordenada cronológicamente
-  - [ ] Tarjetas/cards para cada nota
-  - [ ] Mostrar título, tags y fecha de creación
-- [ ] Implementar funcionalidades de búsqueda
-  - [ ] Barra de búsqueda por título
-  - [ ] Filtros por fecha (selector de rango)
-  - [ ] Filtros por categoría/tag
-  - [ ] Botón para limpiar filtros
-- [ ] Acciones sobre notas
-  - [ ] Ver nota completa (modal)
-  - [ ] Editar nota existente
-  - [ ] Eliminar nota
+- [x] Mejorar dashboard de notas ✅ COMPLETADO
+  - [x] Lista de notas ordenada cronológicamente
+  - [x] Tarjetas/cards para cada nota
+  - [x] Mostrar título, tags y fecha de creación
+- [x] Implementar funcionalidades de búsqueda ✅ COMPLETADO
+  - [x] Barra de búsqueda por título/contenido
+  - [x] Filtros por categoría/tag
+  - [x] Botón para limpiar filtros
+  - [x] Estados de carga y error
+- [x] Acciones sobre notas ✅ COMPLETADO
+  - [x] Ver nota completa (modal)
+  - [x] Editar nota existente
+  - [x] Eliminar nota
+  - [x] Validación de ownership (solo el propietario puede editar/eliminar)
   - [ ] Exportar nota
 
 ### 🎨 Mejoras de UI/UX
-- [ ] Implementar feedback visual
-  - [ ] Estados de carga (spinners/skeletons)
-  - [ ] Notificaciones de éxito/error
-  - [ ] Tooltips informativos
+- [x] Implementar feedback visual ✅ COMPLETADO
+  - [x] Estados de carga (spinners/skeletons)
+  - [x] Notificaciones de éxito/error con react-hot-toast
+  - [x] Modal de confirmación para eliminación
+  - [x] Tooltips informativos
 - [ ] Responsive design
   - [ ] Optimizar para móviles
   - [ ] Optimizar para tablets

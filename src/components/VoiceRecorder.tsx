@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { useAudioRecorder } from '@/lib/hooks/useAudioRecorder'
+import { useToast } from '@/lib/hooks/useToast'
 import { AudioVisualizer } from './AudioVisualizer'
 import { RecordingControls } from './RecordingControls'
 import { RecordingTimer } from './RecordingTimer'
@@ -21,6 +23,7 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
   const [transcription, setTranscription] = useState('')
   const [showTranscriptionModal, setShowTranscriptionModal] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const toast = useToast()
   
   const {
     isRecording,
@@ -176,11 +179,11 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
       } else {
         const error = await response.json()
         console.error('API error:', error)
-        alert(`Error: ${error.error}`)
+        toast.error(`Error: ${error.error}`)
       }
     } catch (error) {
       console.error('Error transcribing:', error)
-      alert('Error al transcribir el audio')
+      toast.error('Error al transcribir el audio')
     } finally {
       setIsTranscribing(false)
     }
@@ -203,15 +206,15 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
       if (response.ok) {
         const result = await response.json()
         console.log('Note saved:', result)
-        alert('¡Nota guardada exitosamente!')
+        toast.success('¡Nota guardada exitosamente!')
       } else {
         const error = await response.json()
         console.error('Error saving note:', error)
-        alert(`Error al guardar: ${error.error}`)
+        toast.error(`Error al guardar: ${error.error}`)
       }
     } catch (error) {
       console.error('Error saving transcription:', error)
-      alert('Error al guardar la transcripción')
+      toast.error('Error al guardar la transcripción')
     }
   }
 
@@ -325,6 +328,8 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
         transcription={transcription}
         onSave={handleSaveTranscription}
       />
+
+      <Toaster />
     </Card>
   )
 }
