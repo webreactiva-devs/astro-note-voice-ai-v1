@@ -34,7 +34,8 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Validar tipo de archivo
     const allowedTypes = ['audio/wav', 'audio/mp3', 'audio/mpeg', 'audio/webm'];
-    if (!allowedTypes.includes(audioFile.type)) {
+    const fileType = audioFile.type.split(';')[0]; // Remove codecs part
+    if (!allowedTypes.includes(fileType)) {
       return new Response(
         JSON.stringify({ error: 'Tipo de archivo no soportado. Use WAV, MP3 o WebM' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }

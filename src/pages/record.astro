@@ -66,10 +66,6 @@ const user = Astro.locals.user;
         <div class="flex justify-center">
           <VoiceRecorder 
             client:load 
-            onTranscribe={(audioBlob) => {
-              // This will be handled by the transcription system
-              console.log('Transcribing audio blob:', audioBlob);
-            }}
             className="w-full max-w-2xl"
           />
         </div>

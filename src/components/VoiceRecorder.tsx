@@ -3,20 +3,23 @@ import { useAudioRecorder } from '@/lib/hooks/useAudioRecorder'
 import { AudioVisualizer } from './AudioVisualizer'
 import { RecordingControls } from './RecordingControls'
 import { RecordingTimer } from './RecordingTimer'
+import { TranscriptionModal } from './TranscriptionModal'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { cn } from '@/lib/utils'
 import { Download, Play, Pause, Send } from 'lucide-react'
 
 interface VoiceRecorderProps {
-  onTranscribe?: (audioBlob: Blob) => void
   className?: string
 }
 
-export function VoiceRecorder({ onTranscribe, className }: VoiceRecorderProps) {
+export function VoiceRecorder({ className }: VoiceRecorderProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [playbackTime, setPlaybackTime] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [isTranscribing, setIsTranscribing] = useState(false)
+  const [transcription, setTranscription] = useState('')
+  const [showTranscriptionModal, setShowTranscriptionModal] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   
   const {
@@ -141,9 +144,74 @@ export function VoiceRecorder({ onTranscribe, className }: VoiceRecorderProps) {
     URL.revokeObjectURL(url)
   }
 
-  const handleTranscribe = () => {
-    if (audioBlob && onTranscribe) {
-      onTranscribe(audioBlob)
+  const handleTranscribe = async () => {
+    console.log('handleTranscribe called')
+    console.log('audioBlob:', audioBlob)
+    
+    if (!audioBlob) {
+      console.log('No audio blob available')
+      return
+    }
+
+    setIsTranscribing(true)
+    
+    try {
+      console.log('Starting transcription...')
+      const formData = new FormData()
+      formData.append('audio', audioBlob, 'recording.webm')
+      
+      console.log('Making request to /api/transcribe...')
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData
+      })
+      
+      console.log('Response status:', response.status)
+      
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Transcription result:', result)
+        setTranscription(result.transcription)
+        setShowTranscriptionModal(true)
+      } else {
+        const error = await response.json()
+        console.error('API error:', error)
+        alert(`Error: ${error.error}`)
+      }
+    } catch (error) {
+      console.error('Error transcribing:', error)
+      alert('Error al transcribir el audio')
+    } finally {
+      setIsTranscribing(false)
+    }
+  }
+
+  const handleSaveTranscription = async (editedTranscription: string) => {
+    try {
+      console.log('Saving transcription as note:', editedTranscription)
+      
+      const response = await fetch('/api/notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: editedTranscription
+        })
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Note saved:', result)
+        alert('¡Nota guardada exitosamente!')
+      } else {
+        const error = await response.json()
+        console.error('Error saving note:', error)
+        alert(`Error al guardar: ${error.error}`)
+      }
+    } catch (error) {
+      console.error('Error saving transcription:', error)
+      alert('Error al guardar la transcripción')
     }
   }
 
@@ -236,9 +304,10 @@ export function VoiceRecorder({ onTranscribe, className }: VoiceRecorderProps) {
               onClick={handleTranscribe}
               size="lg"
               className="gap-2"
+              disabled={isTranscribing}
             >
               <Send className="h-4 w-4" />
-              Send to Transcribe
+              {isTranscribing ? 'Transcribing...' : 'Send to Transcribe'}
             </Button>
           </div>
         </div>
@@ -249,6 +318,13 @@ export function VoiceRecorder({ onTranscribe, className }: VoiceRecorderProps) {
           {isPaused ? 'Recording paused' : 'Recording in progress...'}
         </div>
       )}
+
+      <TranscriptionModal
+        isOpen={showTranscriptionModal}
+        onClose={() => setShowTranscriptionModal(false)}
+        transcription={transcription}
+        onSave={handleSaveTranscription}
+      />
     </Card>
   )
 }
