@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
-import { auth } from '@/lib/auth';
+import { authenticateRequest, createUnauthorizedResponse, createBadRequestResponse, createServerErrorResponse } from '@/lib/middleware';
+import { validateNoteContent, sanitizeContent } from '@/lib/validation';
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limiter';
 import { database } from '@/lib/database';
 
 // Utility function to generate unique ID
@@ -86,23 +88,34 @@ async function generateTags(content: string): Promise<string[]> {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    // Verify authentication
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (!session) {
+    // Authenticate request
+    const user = await authenticateRequest(request);
+    
+    // Apply rate limiting
+    const rateLimitResult = withRateLimit(user.id, 'notes', RATE_LIMITS.notes);
+    if (!rateLimitResult.allowed) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Too many requests. Please wait before creating more notes.' }),
+        { 
+          status: 429, 
+          headers: { 
+            'Content-Type': 'application/json',
+            ...rateLimitResult.headers
+          } 
+        }
       );
     }
 
     const { content } = await request.json();
 
-    if (!content || typeof content !== 'string' || content.trim() === '') {
-      return new Response(
-        JSON.stringify({ error: 'Content is required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+    // Validate content
+    const validation = validateNoteContent(content);
+    if (!validation.isValid) {
+      return createBadRequestResponse(validation.error!);
     }
+
+    // Sanitize content
+    const sanitizedContent = sanitizeContent(content);
 
     // Generate title and tags using Groq
     const [title, tags] = await Promise.all([
@@ -117,7 +130,7 @@ export const POST: APIRoute = async ({ request }) => {
     await database.execute({
       sql: `INSERT INTO notes (id, userId, title, content, tags, createdAt, updatedAt) 
             VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-      args: [noteId, session.user.id, title, content.trim(), JSON.stringify(tags)]
+      args: [noteId, user.id, title, sanitizedContent, JSON.stringify(tags)]
     });
 
     return new Response(
@@ -126,32 +139,50 @@ export const POST: APIRoute = async ({ request }) => {
         note: {
           id: noteId,
           title,
-          content: content.trim(),
+          content: sanitizedContent,
           tags,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }
       }),
-      { status: 201, headers: { 'Content-Type': 'application/json' } }
+      { 
+        status: 201, 
+        headers: { 
+          'Content-Type': 'application/json',
+          ...rateLimitResult.headers
+        } 
+      }
     );
 
   } catch (error) {
     console.error('Error in POST /api/notes:', error);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    
+    // Handle authentication errors
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return createUnauthorizedResponse();
+    }
+    
+    return createServerErrorResponse('Internal server error');
   }
 };
 
 export const GET: APIRoute = async ({ request, url }) => {
   try {
-    // Verify authentication
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (!session) {
+    // Authenticate request
+    const user = await authenticateRequest(request);
+    
+    // Apply rate limiting
+    const rateLimitResult = withRateLimit(user.id, 'notes', RATE_LIMITS.notes);
+    if (!rateLimitResult.allowed) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Too many requests. Please wait before fetching notes.' }),
+        { 
+          status: 429, 
+          headers: { 
+            'Content-Type': 'application/json',
+            ...rateLimitResult.headers
+          } 
+        }
       );
     }
 
@@ -168,7 +199,7 @@ export const GET: APIRoute = async ({ request, url }) => {
     let sql = `SELECT id, title, content, tags, createdAt, updatedAt 
                FROM notes 
                WHERE userId = ?`;
-    const args: any[] = [session.user.id];
+    const args: any[] = [user.id];
 
     // Add search filter
     if (search) {
@@ -211,7 +242,7 @@ export const GET: APIRoute = async ({ request, url }) => {
 
     // Get total count for pagination
     let countSql = `SELECT COUNT(*) as total FROM notes WHERE userId = ?`;
-    const countArgs: any[] = [session.user.id];
+    const countArgs: any[] = [user.id];
 
     if (search) {
       countSql += ` AND (title LIKE ? OR content LIKE ?)`;
@@ -247,14 +278,23 @@ export const GET: APIRoute = async ({ request, url }) => {
           hasMore: offset + limit < total
         }
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { 
+        status: 200, 
+        headers: { 
+          'Content-Type': 'application/json',
+          ...rateLimitResult.headers
+        } 
+      }
     );
 
   } catch (error) {
     console.error('Error in GET /api/notes:', error);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    
+    // Handle authentication errors
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return createUnauthorizedResponse();
+    }
+    
+    return createServerErrorResponse('Internal server error');
   }
 };

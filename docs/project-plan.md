@@ -93,16 +93,21 @@
   - [ ] Contraste de colores
 
 ### 🔒 Seguridad y Validación
-- [ ] Proteger rutas de API
-  - [ ] Middleware de autenticación
-  - [ ] Validación de permisos de usuario
-- [ ] Validación de datos
-  - [ ] Validar formato de archivos de audio
-  - [ ] Validar tamaño de archivos
-  - [ ] Sanitizar inputs de usuario
-- [ ] Rate limiting
-  - [ ] Limitar llamadas a API de transcripción
-  - [ ] Limitar creación de notas por usuario
+- [x] Proteger rutas de API ✅ COMPLETADO
+  - [x] Middleware de autenticación centralizado
+  - [x] Validación de permisos de usuario
+  - [x] Manejo consistente de errores de autenticación
+- [x] Validación de datos ✅ COMPLETADO
+  - [x] Validar formato de archivos de audio (MIME types, codecs)
+  - [x] Validar tamaño de archivos (máximo 10MB)
+  - [x] Sanitizar inputs de usuario (XSS prevention)
+  - [x] Validar contenido de notas (longitud, formato)
+  - [x] Validar IDs y parámetros de URL
+- [x] Rate limiting ✅ COMPLETADO
+  - [x] Limitar llamadas a API de transcripción (5/min)
+  - [x] Limitar operaciones de notas (30/min)
+  - [x] Headers de rate limit en respuestas
+  - [x] Sistema en memoria con limpieza automática
 
 ### 🧪 Testing y Calidad
 - [ ] Configurar entorno de testing

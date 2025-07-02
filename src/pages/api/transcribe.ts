@@ -1,54 +1,46 @@
 import type { APIRoute } from 'astro';
-import { auth } from '@/lib/auth';
+import { authenticateRequest, createUnauthorizedResponse, createBadRequestResponse, createServerErrorResponse, createRateLimitResponse } from '@/lib/middleware';
+import { validateAudioFile } from '@/lib/validation';
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limiter';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    // Verificar autenticación
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (!session) {
+    // Authenticate request
+    const user = await authenticateRequest(request);
+    
+    // Apply rate limiting
+    const rateLimitResult = withRateLimit(user.id, 'transcription', RATE_LIMITS.transcription);
+    if (!rateLimitResult.allowed) {
       return new Response(
-        JSON.stringify({ error: 'No autorizado' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Too many transcription requests. Please wait before trying again.' }),
+        { 
+          status: 429, 
+          headers: { 
+            'Content-Type': 'application/json',
+            ...rateLimitResult.headers
+          } 
+        }
       );
     }
 
-    // Verificar que el contenido sea FormData
+    // Validate content type
     const contentType = request.headers.get('content-type');
     if (!contentType?.includes('multipart/form-data')) {
-      return new Response(
-        JSON.stringify({ error: 'Content-Type debe ser multipart/form-data' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return createBadRequestResponse('Content-Type must be multipart/form-data');
     }
 
-    // Obtener FormData
+    // Get FormData
     const formData = await request.formData();
     const audioFile = formData.get('audio') as File;
 
     if (!audioFile) {
-      return new Response(
-        JSON.stringify({ error: 'No se encontró archivo de audio' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return createBadRequestResponse('No audio file found');
     }
 
-    // Validar tipo de archivo
-    const allowedTypes = ['audio/wav', 'audio/mp3', 'audio/mpeg', 'audio/webm'];
-    const fileType = audioFile.type.split(';')[0]; // Remove codecs part
-    if (!allowedTypes.includes(fileType)) {
-      return new Response(
-        JSON.stringify({ error: 'Tipo de archivo no soportado. Use WAV, MP3 o WebM' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Validar tamaño (máximo 25MB)
-    const maxSize = 25 * 1024 * 1024; // 25MB
-    if (audioFile.size > maxSize) {
-      return new Response(
-        JSON.stringify({ error: 'Archivo demasiado grande. Máximo 25MB' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+    // Validate audio file
+    const validation = validateAudioFile(audioFile);
+    if (!validation.isValid) {
+      return createBadRequestResponse(validation.error!);
     }
 
     // Preparar FormData para Groq
@@ -103,7 +95,13 @@ export const POST: APIRoute = async ({ request }) => {
           transcription: transcriptionResult.text.trim(),
           success: true 
         }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
+        { 
+          status: 200, 
+          headers: { 
+            'Content-Type': 'application/json',
+            ...rateLimitResult.headers
+          } 
+        }
       );
 
     } catch (fetchError) {
@@ -125,9 +123,12 @@ export const POST: APIRoute = async ({ request }) => {
 
   } catch (error) {
     console.error('Error en /api/transcribe:', error);
-    return new Response(
-      JSON.stringify({ error: 'Error interno del servidor' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    
+    // Handle authentication errors
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return createUnauthorizedResponse();
+    }
+    
+    return createServerErrorResponse('Error interno del servidor');
   }
 };
