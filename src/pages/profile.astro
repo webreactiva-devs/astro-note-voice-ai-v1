@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import { VoiceRecorder } from "@/components/VoiceRecorder";
+import { UserProfile } from "@/components/UserProfile";
 import { UserDropdown } from "@/components/UserDropdown";
 
 // Redirect if not logged in
@@ -17,7 +17,7 @@ const user = Astro.locals.user;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Grabación de Voz - AI Astro Voice</title>
+    <title>Mi Perfil - AI Astro Voice</title>
   </head>
   <body>
     <div class="min-h-screen bg-gray-50">
@@ -27,7 +27,7 @@ const user = Astro.locals.user;
             <div class="flex items-center gap-6">
               <div>
                 <h1 class="text-3xl font-bold text-gray-900">AI Astro Voice</h1>
-                <p class="mt-1 text-sm text-gray-600">Grabación de Voz</p>
+                <p class="mt-1 text-sm text-gray-600">Mi Perfil</p>
               </div>
             </div>
             <div class="flex items-center gap-4">
@@ -37,6 +37,12 @@ const user = Astro.locals.user;
                   class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   Dashboard
+                </a>
+                <a 
+                  href="/record" 
+                  class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Grabar
                 </a>
                 <a 
                   href="/notes" 
@@ -53,35 +59,16 @@ const user = Astro.locals.user;
       </header>
 
       <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 text-center">
+        <div class="mb-8">
           <h2 class="text-2xl font-bold text-gray-900 mb-2">
-            Graba tu Nota de Voz
+            Mi Perfil
           </h2>
-          <p class="text-gray-600 max-w-2xl mx-auto">
-            Graba hasta 2 minutos de audio. Podrás escuchar, descargar y transcribir tu grabación automáticamente.
+          <p class="text-gray-600">
+            Información de tu cuenta y configuración.
           </p>
         </div>
 
-        <div class="flex justify-center">
-          <VoiceRecorder 
-            client:load 
-            className="w-full max-w-2xl"
-          />
-        </div>
-
-        <div class="mt-8 text-center">
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
-            <h3 class="text-sm font-medium text-blue-900 mb-2">
-              💡 Consejos para una mejor grabación
-            </h3>
-            <ul class="text-sm text-blue-800 space-y-1">
-              <li>• Graba en un ambiente silencioso</li>
-              <li>• Habla claro y a una distancia adecuada del micrófono</li>
-              <li>• Puedes pausar y reanudar la grabación cuando necesites</li>
-              <li>• La grabación se detendrá automáticamente a los 2 minutos</li>
-            </ul>
-          </div>
-        </div>
+        <UserProfile user={user} client:load />
       </main>
     </div>
   </body>

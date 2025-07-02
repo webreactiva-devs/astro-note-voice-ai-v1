@@ -47,7 +47,7 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
         audioRef.current = null
       }
       
-      const audio = new Audio(URL.createObjectURL(audioBlob))
+      const audio = new Audio()
       audioRef.current = audio
       
       // Reset states
@@ -55,11 +55,31 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
       setDuration(0)
       setIsPlaying(false)
       
-      const handleLoadedMetadata = () => {
-        console.log('Audio duration:', audio.duration)
+      const updateDuration = () => {
         if (isFinite(audio.duration) && audio.duration > 0) {
+          console.log('Duration updated:', audio.duration)
           setDuration(audio.duration)
         }
+      }
+      
+      const handleLoadedMetadata = () => {
+        console.log('Audio metadata loaded, duration:', audio.duration)
+        updateDuration()
+      }
+      
+      const handleLoadedData = () => {
+        console.log('Audio data loaded, duration:', audio.duration)
+        updateDuration()
+      }
+      
+      const handleCanPlay = () => {
+        console.log('Audio can play, duration:', audio.duration)
+        updateDuration()
+      }
+      
+      const handleDurationChange = () => {
+        console.log('Duration changed:', audio.duration)
+        updateDuration()
       }
       
       const handleTimeUpdate = () => {
@@ -79,21 +99,42 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
         setIsPlaying(false)
       }
       
-      const handleCanPlay = () => {
-        console.log('Audio can play, duration:', audio.duration)
-        if (isFinite(audio.duration) && audio.duration > 0) {
-          setDuration(audio.duration)
-        }
-      }
-      
+      // Add all event listeners before setting source
       audio.addEventListener('loadedmetadata', handleLoadedMetadata)
+      audio.addEventListener('loadeddata', handleLoadedData)
+      audio.addEventListener('canplay', handleCanPlay)
+      audio.addEventListener('durationchange', handleDurationChange)
       audio.addEventListener('timeupdate', handleTimeUpdate)
       audio.addEventListener('ended', handleEnded)
       audio.addEventListener('error', handleError)
-      audio.addEventListener('canplay', handleCanPlay)
       
-      // Force load metadata
+      // Set source and load
+      audio.src = URL.createObjectURL(audioBlob)
       audio.load()
+      
+      // Backup: try to get duration after a small delay for WebM files
+      const timeoutId = setTimeout(() => {
+        if (!isFinite(audio.duration) || audio.duration === 0) {
+          console.log('Attempting to reload audio for duration...')
+          audio.load()
+          
+          // Try one more time after another delay
+          setTimeout(() => {
+            updateDuration()
+          }, 500)
+        }
+      }, 100)
+      
+      return () => {
+        clearTimeout(timeoutId)
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
+        audio.removeEventListener('loadeddata', handleLoadedData)
+        audio.removeEventListener('canplay', handleCanPlay)
+        audio.removeEventListener('durationchange', handleDurationChange)
+        audio.removeEventListener('timeupdate', handleTimeUpdate)
+        audio.removeEventListener('ended', handleEnded)
+        audio.removeEventListener('error', handleError)
+      }
     }
     
     return () => {

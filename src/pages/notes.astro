@@ -1,6 +1,8 @@
 ---
 import "../styles/global.css";
 import { NotesManager } from "@/components/NotesManager";
+import { UserDropdown } from "@/components/UserDropdown";
+import { database } from "@/lib/database";
 
 // Redirect if not logged in
 if (!Astro.locals.user) {
@@ -8,6 +10,24 @@ if (!Astro.locals.user) {
 }
 
 const user = Astro.locals.user;
+
+// Check if user has any notes, if not redirect to record first
+try {
+  const result = await database.execute({
+    sql: 'SELECT COUNT(*) as count FROM notes WHERE userId = ?',
+    args: [user.id]
+  });
+  
+  const count = Number(result.rows[0]?.count || 0);
+  
+  // If user has no notes, redirect to record page
+  if (count === 0) {
+    return Astro.redirect("/record");
+  }
+} catch (error) {
+  console.error('Error checking note count:', error);
+  // Continue to load the page if there's an error
+}
 ---
 
 <html lang="es">
@@ -45,9 +65,7 @@ const user = Astro.locals.user;
                 </a>
               </nav>
               <div class="h-6 w-px bg-gray-300"></div>
-              <span class="text-sm text-gray-700">
-                {user.name || user.email}
-              </span>
+              <UserDropdown user={user} client:load />
             </div>
           </div>
         </div>

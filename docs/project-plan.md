@@ -71,6 +71,12 @@
   - [x] Eliminar nota
   - [x] Validación de ownership (solo el propietario puede editar/eliminar)
   - [ ] Exportar nota
+- [x] Navegación y flujo de usuario ✅ COMPLETADO
+  - [x] Redirección de dashboard a /notes
+  - [x] Flujo para nuevos usuarios (redirigir a grabar primera nota)
+  - [x] Dropdown de usuario con perfil y logout
+  - [x] Página de perfil de usuario
+  - [x] Navegación consistente en todos los headers
 
 ### 🎨 Mejoras de UI/UX
 - [x] Implementar feedback visual ✅ COMPLETADO
