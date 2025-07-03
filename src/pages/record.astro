@@ -47,7 +47,7 @@ const user = Astro.locals.user;
                 </a>
               </nav>
               <div class="hidden sm:block h-6 w-px bg-gray-300"></div>
-              <UserDropdown user={user} client:load />
+              <UserDropdown user={user} showNavigation={true} client:load />
             </div>
           </div>
         </div>
