@@ -146,14 +146,14 @@ export type Config = z.infer<typeof envSchema>;
 // ===========================================
 
 function loadEnvVars(): Record<string, string | undefined> {
-  // On server side (Node.js)
-  if (typeof process !== "undefined" && process.env) {
-    return process.env;
-  }
-
   // On client/build side (Vite)
   if (typeof import.meta !== "undefined" && import.meta.env) {
     return import.meta.env as Record<string, string | undefined>;
+  }
+
+  // On server side (Node.js)
+  if (typeof process !== "undefined" && process.env) {
+    return process.env;
   }
 
   // Fallback
@@ -163,27 +163,31 @@ function loadEnvVars(): Record<string, string | undefined> {
 // Check if we're in test environment
 function isTestEnvironment(): boolean {
   const env = loadEnvVars();
-  return env.NODE_ENV === 'test' || env.VITEST === 'true';
+  return env.NODE_ENV === "test" || env.VITEST === "true";
 }
 
 export function validateConfig(): Config {
   const env = loadEnvVars();
 
+  console.log(env);
+
   // In test environment, provide sensible defaults
   if (isTestEnvironment()) {
     const testDefaults = {
       ...env,
-      BETTER_AUTH_SECRET: env.BETTER_AUTH_SECRET || 'test-secret-that-is-at-least-32-characters-long-for-testing',
-      BETTER_AUTH_URL: env.BETTER_AUTH_URL || 'http://localhost:4321',
-      GROQ_API_KEY: env.GROQ_API_KEY || 'test-groq-api-key',
-      USE_LOCAL_DB: env.USE_LOCAL_DB || 'true',
-      NODE_ENV: 'test',
+      BETTER_AUTH_SECRET:
+        env.BETTER_AUTH_SECRET ||
+        "test-secret-that-is-at-least-32-characters-long-for-testing",
+      BETTER_AUTH_URL: env.BETTER_AUTH_URL || "http://localhost:4321",
+      GROQ_API_KEY: env.GROQ_API_KEY || "test-groq-api-key",
+      USE_LOCAL_DB: env.USE_LOCAL_DB || "true",
+      NODE_ENV: "test",
     };
-    
+
     try {
       return envSchema.parse(testDefaults);
     } catch (error) {
-      console.warn('Test config validation failed, using fallback');
+      console.warn("Test config validation failed, using fallback");
       return testDefaults as any;
     }
   }
