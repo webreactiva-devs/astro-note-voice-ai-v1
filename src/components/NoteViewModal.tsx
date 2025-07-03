@@ -1,64 +1,63 @@
-import { useState } from 'react'
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogDescription,
-  DialogFooter 
-} from './ui/dialog'
-import { Button } from './ui/button'
-import { Badge } from './ui/badge'
-import { Calendar, Tag, Edit, Trash2 } from 'lucide-react'
+  DialogFooter,
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { Calendar, Tag, Edit, Trash2 } from "lucide-react";
 
 interface Note {
-  id: string
-  title: string
-  content: string
-  tags: string[]
-  createdAt: string
-  updatedAt: string
+  id: string;
+  title: string;
+  content: string;
+  organizedContent: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface NoteViewModalProps {
-  note: Note | null
-  isOpen: boolean
-  onClose: () => void
-  onEdit: (note: Note) => void
-  onDelete: (note: Note) => void
+  note: Note | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onEdit: (note: Note) => void;
+  onDelete: (note: Note) => void;
 }
 
-export function NoteViewModal({ 
-  note, 
-  isOpen, 
-  onClose, 
-  onEdit, 
-  onDelete 
+export function NoteViewModal({
+  note,
+  isOpen,
+  onClose,
+  onEdit,
+  onDelete,
 }: NoteViewModalProps) {
-
-  if (!note) return null
+  if (!note) return null;
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  }
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const handleEdit = () => {
-    onEdit(note)
-    onClose()
-  }
+    onEdit(note);
+    onClose();
+  };
 
   const handleDelete = () => {
-    onDelete(note)
-    onClose()
-  }
-
+    onDelete(note);
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -73,9 +72,7 @@ export function NoteViewModal({
               Creada el {formatDate(note.createdAt)}
             </span>
             {note.createdAt !== note.updatedAt && (
-              <span>
-                • Editada el {formatDate(note.updatedAt)}
-              </span>
+              <span>• Editada el {formatDate(note.updatedAt)}</span>
             )}
           </DialogDescription>
         </DialogHeader>
@@ -98,9 +95,19 @@ export function NoteViewModal({
             </div>
           )}
 
+          {/* Organized Content */}
+          <div className="space-y-2 mt-4">
+            <h4 className="text-sm font-medium">Nota procesada</h4>
+            <div className="p-4 bg-muted/50 rounded-lg border max-h-[400px] overflow-y-auto">
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                {note.organizedContent || "No hay contenido organizado por IA."}
+              </p>
+            </div>
+          </div>
+
           {/* Content */}
           <div className="space-y-2">
-            <h4 className="text-sm font-medium">Contenido</h4>
+            <h4 className="text-sm font-medium">Transcripción original</h4>
             <div className="p-4 bg-muted/50 rounded-lg border max-h-[400px] overflow-y-auto">
               <p className="text-sm leading-relaxed whitespace-pre-wrap">
                 {note.content}
@@ -117,12 +124,16 @@ export function NoteViewModal({
             <Edit className="h-4 w-4" />
             Editar
           </Button>
-          <Button variant="destructive" onClick={handleDelete} className="gap-2">
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            className="gap-2"
+          >
             <Trash2 className="h-4 w-4" />
             Eliminar
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -1,93 +1,106 @@
-import { useState, useEffect } from 'react'
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogDescription,
-  DialogFooter 
-} from './ui/dialog'
-import { Button } from './ui/button'
-import { Input } from './ui/input'
-import { Textarea } from './ui/textarea'
-import { Save, X } from 'lucide-react'
+  DialogFooter,
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { Save, X } from "lucide-react";
 
 interface Note {
-  id: string
-  title: string
-  content: string
-  tags: string[]
-  createdAt: string
-  updatedAt: string
+  id: string;
+  title: string;
+  content: string;
+  organizedContent: string;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface NoteEditModalProps {
-  note: Note | null
-  isOpen: boolean
-  onClose: () => void
-  onSave: (noteId: string, updatedNote: { title: string; content: string; tags: string[] }) => Promise<void>
+  note: Note | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (
+    noteId: string,
+    updatedNote: {
+      title: string;
+      content: string;
+      organizedContent: string;
+      tags: string[];
+    }
+  ) => Promise<void>;
 }
 
-export function NoteEditModal({ 
-  note, 
-  isOpen, 
-  onClose, 
-  onSave 
+export function NoteEditModal({
+  note,
+  isOpen,
+  onClose,
+  onSave,
 }: NoteEditModalProps) {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const [tagsInput, setTagsInput] = useState('')
-  const [isSaving, setIsSaving] = useState(false)
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [organizedContent, setOrganizedContent] = useState("");
+  const [tagsInput, setTagsInput] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // Update form when note changes
   useEffect(() => {
     if (note) {
-      setTitle(note.title)
-      setContent(note.content)
-      setTagsInput(note.tags.join(', '))
+      setTitle(note.title);
+      setContent(note.content);
+      setOrganizedContent(note.organizedContent);
+      setTagsInput(note.tags.join(", "));
     }
-  }, [note])
+  }, [note]);
 
-  if (!note) return null
+  if (!note) return null;
 
   const handleSave = async () => {
     if (!title.trim() || !content.trim()) {
-      alert('El título y el contenido son obligatorios')
-      return
+      alert("El título y el contenido son obligatorios");
+      return;
     }
 
-    setIsSaving(true)
+    setIsSaving(true);
     try {
       // Parse tags from comma-separated string
       const tags = tagsInput
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0)
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
 
       await onSave(note.id, {
         title: title.trim(),
         content: content.trim(),
-        tags
-      })
-      
-      onClose()
+        organizedContent: organizedContent.trim(),
+        tags,
+      });
+
+      onClose();
     } catch (error) {
-      console.error('Error saving note:', error)
-      alert('Error al guardar la nota')
+      console.error("Error saving note:", error);
+      alert("Error al guardar la nota");
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   const handleCancel = () => {
     // Reset form to original values
     if (note) {
-      setTitle(note.title)
-      setContent(note.content)
-      setTagsInput(note.tags.join(', '))
+      setTitle(note.title);
+      setContent(note.content);
+      setOrganizedContent(note.organizedContent);
+      setTagsInput(note.tags.join(", "));
     }
-    onClose()
-  }
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCancel}>
@@ -114,10 +127,24 @@ export function NoteEditModal({
             />
           </div>
 
+          {/* Organized Content */}
+          <div className="space-y-2">
+            <label htmlFor="organizedContent" className="text-sm font-medium">
+              Nota procesada por IA
+            </label>
+            <Textarea
+              id="organizedContent"
+              value={organizedContent}
+              onChange={(e) => setOrganizedContent(e.target.value)}
+              placeholder="Contenido organizado por IA..."
+              className="min-h-[200px] resize-none"
+            />
+          </div>
+
           {/* Content */}
           <div className="space-y-2">
             <label htmlFor="content" className="text-sm font-medium">
-              Contenido
+              Transcripción original
             </label>
             <Textarea
               id="content"
@@ -146,23 +173,19 @@ export function NoteEditModal({
         </div>
 
         <DialogFooter className="gap-2">
-          <Button 
-            variant="outline" 
-            onClick={handleCancel}
-            disabled={isSaving}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
             <X className="h-4 w-4 mr-2" />
             Cancelar
           </Button>
-          <Button 
+          <Button
             onClick={handleSave}
             disabled={isSaving || !title.trim() || !content.trim()}
           >
             <Save className="h-4 w-4 mr-2" />
-            {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+            {isSaving ? "Guardando..." : "Guardar Cambios"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
