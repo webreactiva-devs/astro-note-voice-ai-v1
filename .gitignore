@@ -25,3 +25,5 @@ pnpm-debug.log*
 
 # Ignore local database file
 /database/dev.db
+
+coverage

@@ -1,27 +1,24 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { useAudioRecorder } from '@/lib/hooks/useAudioRecorder'
 import { useToast } from '@/lib/hooks/useToast'
 import { AudioVisualizer } from './AudioVisualizer'
 import { RecordingControls } from './RecordingControls'
 import { RecordingTimer } from './RecordingTimer'
+import { AudioPlayer } from './AudioPlayer'
 import { LazyTranscriptionModal } from './LazyModal'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { cn } from '@/lib/utils'
-import { Download, Play, Pause, Send } from 'lucide-react'
+import { Send } from 'lucide-react'
 
 interface VoiceRecorderProps {
   className?: string
 }
 
 export function VoiceRecorder({ className }: VoiceRecorderProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [playbackTime, setPlaybackTime] = useState(0)
-  const [duration, setDuration] = useState(0)
   const [isTranscribing, setIsTranscribing] = useState(false)
   const [transcription, setTranscription] = useState('')
   const [showTranscriptionModal, setShowTranscriptionModal] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
   const toast = useToast()
   
   const {
@@ -37,155 +34,6 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
     resetRecording,
   } = useAudioRecorder()
 
-  useEffect(() => {
-    if (audioBlob) {
-      // Clean up previous audio if exists
-      if (audioRef.current) {
-        audioRef.current.pause()
-        URL.revokeObjectURL(audioRef.current.src)
-        audioRef.current = null
-      }
-      
-      const audio = new Audio()
-      audioRef.current = audio
-      
-      // Reset states
-      setPlaybackTime(0)
-      setDuration(0)
-      setIsPlaying(false)
-      
-      const updateDuration = () => {
-        if (isFinite(audio.duration) && audio.duration > 0) {
-          console.log('Duration updated:', audio.duration)
-          setDuration(audio.duration)
-        }
-      }
-      
-      const handleLoadedMetadata = () => {
-        console.log('Audio metadata loaded, duration:', audio.duration)
-        updateDuration()
-      }
-      
-      const handleLoadedData = () => {
-        console.log('Audio data loaded, duration:', audio.duration)
-        updateDuration()
-      }
-      
-      const handleCanPlay = () => {
-        console.log('Audio can play, duration:', audio.duration)
-        updateDuration()
-      }
-      
-      const handleDurationChange = () => {
-        console.log('Duration changed:', audio.duration)
-        updateDuration()
-      }
-      
-      const handleTimeUpdate = () => {
-        if (isFinite(audio.currentTime)) {
-          setPlaybackTime(audio.currentTime)
-        }
-      }
-      
-      const handleEnded = () => {
-        setIsPlaying(false)
-        setPlaybackTime(0)
-        audio.currentTime = 0
-      }
-      
-      const handleError = (e: Event) => {
-        console.error('Audio error:', e)
-        setIsPlaying(false)
-      }
-      
-      // Add all event listeners before setting source
-      audio.addEventListener('loadedmetadata', handleLoadedMetadata)
-      audio.addEventListener('loadeddata', handleLoadedData)
-      audio.addEventListener('canplay', handleCanPlay)
-      audio.addEventListener('durationchange', handleDurationChange)
-      audio.addEventListener('timeupdate', handleTimeUpdate)
-      audio.addEventListener('ended', handleEnded)
-      audio.addEventListener('error', handleError)
-      
-      // Set source and load
-      audio.src = URL.createObjectURL(audioBlob)
-      audio.load()
-      
-      // Backup: try to get duration after a small delay for WebM files
-      const timeoutId = setTimeout(() => {
-        if (!isFinite(audio.duration) || audio.duration === 0) {
-          console.log('Attempting to reload audio for duration...')
-          audio.load()
-          
-          // Try one more time after another delay
-          setTimeout(() => {
-            updateDuration()
-          }, 500)
-        }
-      }, 100)
-      
-      return () => {
-        clearTimeout(timeoutId)
-        audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
-        audio.removeEventListener('loadeddata', handleLoadedData)
-        audio.removeEventListener('canplay', handleCanPlay)
-        audio.removeEventListener('durationchange', handleDurationChange)
-        audio.removeEventListener('timeupdate', handleTimeUpdate)
-        audio.removeEventListener('ended', handleEnded)
-        audio.removeEventListener('error', handleError)
-      }
-    }
-    
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause()
-        URL.revokeObjectURL(audioRef.current.src)
-        audioRef.current = null
-      }
-      setPlaybackTime(0)
-      setDuration(0)
-      setIsPlaying(false)
-    }
-  }, [audioBlob])
-
-  const handlePlayPause = async () => {
-    if (!audioRef.current) return
-    
-    try {
-      if (isPlaying) {
-        audioRef.current.pause()
-        setIsPlaying(false)
-      } else {
-        await audioRef.current.play()
-        setIsPlaying(true)
-      }
-    } catch (error) {
-      console.error('Error playing audio:', error)
-      setIsPlaying(false)
-    }
-  }
-
-  const formatTime = (seconds: number): string => {
-    if (!isFinite(seconds) || isNaN(seconds)) {
-      return '0:00'
-    }
-    const mins = Math.floor(seconds / 60)
-    const secs = Math.floor(seconds % 60)
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
-
-  const handleDownload = () => {
-    if (!audioBlob) return
-    
-    const url = URL.createObjectURL(audioBlob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `voice-note-${new Date().toISOString().slice(0, 19)}.webm`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
 
   const handleTranscribe = async () => {
     console.log('handleTranscribe called')
@@ -259,14 +107,14 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
   }
 
   return (
-    <Card className={cn("p-6 space-y-6", className)}>
+    <Card className={cn("p-4 sm:p-6 space-y-4 sm:space-y-6", className)}>
       {error && (
-        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-          <p className="text-destructive text-sm">{error}</p>
+        <div className="p-3 sm:p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <p className="text-destructive text-xs sm:text-sm">{error}</p>
         </div>
       )}
 
-      <div className="text-center space-y-4">
+      <div className="text-center space-y-3 sm:space-y-4">
         <RecordingTimer
           timeRemaining={timeRemaining}
           isRecording={isRecording}
@@ -274,7 +122,7 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
         
         <AudioVisualizer
           isRecording={isRecording && !isPaused}
-          className="mx-auto max-w-md"
+          className="mx-auto max-w-xs sm:max-w-md"
         />
       </div>
 
@@ -287,78 +135,35 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
         onResume={resumeRecording}
         onStop={stopRecording}
         onReset={resetRecording}
-        className="justify-center"
+        className="justify-center flex-wrap gap-2 sm:gap-3"
       />
 
       {audioBlob && !isRecording && (
-        <div className="space-y-4">
-          {/* Audio playback timeline */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>{formatTime(playbackTime)}</span>
-              <span>{duration > 0 ? formatTime(duration) : 'Loading...'}</span>
-            </div>
-            <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-primary transition-all duration-100"
-                style={{ width: `${duration > 0 ? (playbackTime / duration) * 100 : 0}%` }}
-              />
-            </div>
-            {duration === 0 && (
-              <div className="text-xs text-center text-muted-foreground">
-                Processing audio...
-              </div>
-            )}
-          </div>
+        <div className="space-y-4 sm:space-y-6">
+          {/* Audio Player */}
+          <AudioPlayer 
+            audioBlob={audioBlob}
+            className="w-full"
+          />
 
-          <div className="flex justify-center gap-2">
-            <Button
-              onClick={handlePlayPause}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              {isPlaying ? (
-                <>
-                  <Pause className="h-4 w-4" />
-                  Pause
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" />
-                  Play
-                </>
-              )}
-            </Button>
-
-            <Button
-              onClick={handleDownload}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Download
-            </Button>
-          </div>
-
+          {/* Transcribe Button */}
           <div className="flex justify-center">
             <Button
               onClick={handleTranscribe}
               size="lg"
-              className="gap-2"
+              className="gap-2 w-full sm:w-auto min-h-[44px]"
               disabled={isTranscribing}
             >
               <Send className="h-4 w-4" />
-              {isTranscribing ? 'Transcribing...' : 'Send to Transcribe'}
+              {isTranscribing ? 'Transcribiendo...' : 'Transcribir Audio'}
             </Button>
           </div>
         </div>
       )}
 
       {isRecording && (
-        <div className="text-center text-sm text-muted-foreground">
-          {isPaused ? 'Recording paused' : 'Recording in progress...'}
+        <div className="text-center text-xs sm:text-sm text-muted-foreground">
+          {isPaused ? 'Grabación pausada' : 'Grabando...'}
         </div>
       )}
 

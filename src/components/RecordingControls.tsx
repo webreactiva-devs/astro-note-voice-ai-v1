@@ -40,9 +40,9 @@ export function RecordingControls({
           onClick={onStart}
           disabled={disabled}
           size="lg"
-          className="h-16 w-16 rounded-full"
+          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full touch-manipulation"
         >
-          <Mic className="h-6 w-6" />
+          <Mic className="h-5 w-5 sm:h-6 sm:w-6" />
         </Button>
       )
     }
@@ -54,9 +54,9 @@ export function RecordingControls({
           disabled={disabled}
           size="lg"
           variant="secondary"
-          className="h-16 w-16 rounded-full"
+          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full touch-manipulation"
         >
-          <Pause className="h-6 w-6" />
+          <Pause className="h-5 w-5 sm:h-6 sm:w-6" />
         </Button>
       )
     }
@@ -67,9 +67,9 @@ export function RecordingControls({
           onClick={onResume}
           disabled={disabled}
           size="lg"
-          className="h-16 w-16 rounded-full"
+          className="h-14 w-14 sm:h-16 sm:w-16 rounded-full touch-manipulation"
         >
-          <Play className="h-6 w-6" />
+          <Play className="h-5 w-5 sm:h-6 sm:w-6" />
         </Button>
       )
     }
@@ -88,9 +88,9 @@ export function RecordingControls({
           disabled={disabled}
           variant="outline"
           size="lg"
-          className="h-12 w-12 rounded-full"
+          className="h-10 w-10 sm:h-12 sm:w-12 rounded-full touch-manipulation"
         >
-          <Square className="h-4 w-4" />
+          <Square className="h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
       )
     }
@@ -103,9 +103,9 @@ export function RecordingControls({
           disabled={disabled}
           variant="outline"
           size="lg"
-          className="h-12 w-12 rounded-full"
+          className="h-10 w-10 sm:h-12 sm:w-12 rounded-full touch-manipulation"
         >
-          <RotateCcw className="h-4 w-4" />
+          <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
       )
     }
@@ -114,9 +114,9 @@ export function RecordingControls({
   }
 
   return (
-    <div className={cn("flex items-center justify-center gap-4", className)}>
+    <div className={cn("flex items-center justify-center gap-3 sm:gap-4", className)}>
       {getPrimaryButton()}
-      <div className="flex gap-2">
+      <div className="flex gap-2 sm:gap-3">
         {getSecondaryButtons()}
       </div>
     </div>

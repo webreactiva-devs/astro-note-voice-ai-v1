@@ -177,7 +177,7 @@ export function NotesManager() {
   return (
     <div className="space-y-6">
       {/* Search and Filters */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex-1 max-w-md">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -185,18 +185,18 @@ export function NotesManager() {
               placeholder="Buscar en notas..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 h-10 sm:h-9"
             />
           </div>
         </div>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center flex-wrap">
           {/* Tag Filter */}
           {allTags.length > 0 && (
             <select
               value={selectedTag}
               onChange={(e) => setSelectedTag(e.target.value)}
-              className="h-10 px-3 py-2 bg-background border border-input rounded-md text-sm"
+              className="h-10 px-3 py-2 bg-background border border-input rounded-md text-sm min-w-[120px] touch-manipulation"
             >
               <option value="">Todos los tags</option>
               {allTags.map(tag => (
@@ -211,10 +211,11 @@ export function NotesManager() {
               variant="outline"
               size="sm"
               onClick={clearFilters}
-              className="gap-2"
+              className="gap-2 h-10 touch-manipulation"
             >
               <Filter className="h-4 w-4" />
-              Limpiar
+              <span className="hidden sm:inline">Limpiar</span>
+              <span className="sm:hidden">×</span>
             </Button>
           )}
         </div>
@@ -261,14 +262,14 @@ export function NotesManager() {
 
       {/* Notes Grid */}
       {!loading && !error && notes.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {notes.map((note) => (
-            <Card key={note.id} className="p-6 hover:shadow-md transition-shadow">
-              <div className="space-y-4">
+            <Card key={note.id} className="p-4 sm:p-6 hover:shadow-md transition-shadow">
+              <div className="space-y-3 sm:space-y-4">
                 {/* Header */}
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-2">
                   <h3 
-                    className="font-semibold text-lg leading-tight line-clamp-2 cursor-pointer hover:text-primary"
+                    className="font-semibold text-base sm:text-lg leading-tight line-clamp-2 cursor-pointer hover:text-primary flex-1"
                     onClick={() => handleViewNote(note)}
                   >
                     {note.title}
@@ -276,7 +277,7 @@ export function NotesManager() {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-8 w-8 p-0"
+                    className="h-8 w-8 p-0 touch-manipulation shrink-0"
                     onClick={() => handleViewNote(note)}
                   >
                     <Eye className="h-4 w-4" />
@@ -285,7 +286,7 @@ export function NotesManager() {
 
                 {/* Content Preview */}
                 <p 
-                  className="text-sm text-muted-foreground line-clamp-3 cursor-pointer"
+                  className="text-xs sm:text-sm text-muted-foreground line-clamp-3 cursor-pointer"
                   onClick={() => handleViewNote(note)}
                 >
                   {note.content}
@@ -297,11 +298,11 @@ export function NotesManager() {
                     {note.tags.slice(0, 3).map((tag, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center gap-1 px-2 py-1 bg-secondary text-secondary-foreground rounded-md text-xs cursor-pointer hover:bg-secondary/80"
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-secondary text-secondary-foreground rounded-md text-xs cursor-pointer hover:bg-secondary/80 touch-manipulation"
                         onClick={() => setSelectedTag(tag)}
                       >
                         <Tag className="h-3 w-3" />
-                        {tag}
+                        <span className="truncate max-w-[80px]">{tag}</span>
                       </span>
                     ))}
                     {note.tags.length > 3 && (
@@ -316,14 +317,14 @@ export function NotesManager() {
                 <div className="flex items-center justify-between pt-2 border-t">
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    {formatDate(note.createdAt)}
+                    <span className="truncate">{formatDate(note.createdAt)}</span>
                   </div>
                   
                   <div className="flex gap-1">
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-8 p-0 touch-manipulation"
                       onClick={() => handleEditNote(note)}
                       title="Editar nota"
                     >
@@ -332,7 +333,7 @@ export function NotesManager() {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive touch-manipulation"
                       onClick={() => handleDeleteClick(note)}
                       title="Eliminar nota"
                     >
