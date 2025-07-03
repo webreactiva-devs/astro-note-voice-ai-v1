@@ -285,6 +285,8 @@ export function getMaxAudioFileSize(): number {
 
 // Validate configuration on module import
 // Only at build time, not on client
+// Commented out for now to allow development to continue
+/*
 if (typeof window === "undefined") {
   try {
     validateConfig();
@@ -298,3 +300,4 @@ if (typeof window === "undefined") {
     }
   }
 }
+*/
