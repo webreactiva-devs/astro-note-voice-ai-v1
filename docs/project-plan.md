@@ -110,9 +110,20 @@
   - [x] Sistema en memoria con limpieza automática
 
 ### 🧪 Testing y Calidad
-- [ ] Configurar entorno de testing
-- [ ] Tests unitarios para endpoints de API
-- [ ] Tests de integración para flujo completo
+- [x] Configurar entorno de testing ✅ COMPLETADO
+  - [x] Configuración de Vitest con soporte para TypeScript
+  - [x] Integración de React Testing Library
+  - [x] Configuración de mocks para MediaRecorder, AudioContext, y APIs
+  - [x] Scripts de testing en package.json
+- [x] Tests unitarios para endpoints de API ✅ COMPLETADO
+  - [x] Tests para `/api/notes` (GET y POST)
+  - [x] Tests para `/api/transcribe`
+  - [x] Cobertura de casos de éxito y error
+  - [x] Tests de autenticación y rate limiting
+- [x] Tests de integración para flujo completo ✅ COMPLETADO
+  - [x] Flujo completo: transcripción → guardado → recuperación
+  - [x] Manejo de errores en el flujo
+  - [x] Tests de rate limiting integrado
 - [ ] Tests E2E para funcionalidad crítica
 - [ ] Configurar linting y formateo
 - [ ] Configurar pre-commit hooks
