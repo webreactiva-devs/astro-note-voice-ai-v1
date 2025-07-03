@@ -10,6 +10,7 @@ import {
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Calendar, Tag, Edit, Trash2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface Note {
   id: string;
@@ -99,9 +100,9 @@ export function NoteViewModal({
           <div className="space-y-2 mt-4">
             <h4 className="text-sm font-medium">Nota procesada</h4>
             <div className="p-4 bg-muted/50 rounded-lg border max-h-[400px] overflow-y-auto">
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                {note.organizedContent || "No hay contenido organizado por IA."}
-              </p>
+              <div className="text-sm leading-relaxed prose prose-sm max-w-none">
+                <ReactMarkdown>{note.organizedContent || "No hay contenido organizado por IA."}</ReactMarkdown>
+              </div>
             </div>
           </div>
 
@@ -109,9 +110,9 @@ export function NoteViewModal({
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Transcripción original</h4>
             <div className="p-4 bg-muted/50 rounded-lg border max-h-[400px] overflow-y-auto">
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                {note.content}
-              </p>
+              <div className="text-sm leading-relaxed prose prose-sm max-w-none">
+                <ReactMarkdown>{note.content}</ReactMarkdown>
+              </div>
             </div>
           </div>
         </div>

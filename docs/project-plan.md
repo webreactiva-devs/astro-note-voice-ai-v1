@@ -43,6 +43,7 @@
   - [x] Integración con Groq para generar tags
   - [x] Guardar notas en base de datos
   - [x] Validación y sanitización de datos
+  - [x] Campo organizedContent para contenido procesado por IA ✅ COMPLETADO
 - [x] Crear endpoint `/api/notes` (GET) ✅ COMPLETADO
   - [x] Consultar notas del usuario autenticado
   - [x] Implementar filtros por fecha
@@ -70,6 +71,7 @@
   - [x] Editar nota existente
   - [x] Eliminar nota
   - [x] Validación de ownership (solo el propietario puede editar/eliminar)
+  - [x] Soporte de markdown para visualización de notas ✅ COMPLETADO
   - [ ] Exportar nota
 - [x] Navegación y flujo de usuario ✅ COMPLETADO
   - [x] Redirección de dashboard a /notes

@@ -6,11 +6,13 @@ import { LazyNoteViewModal, LazyNoteEditModal } from './LazyModal'
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import { useToast } from '@/lib/hooks/useToast'
 import { Search, Filter, Calendar, Tag, Edit, Trash2, Eye } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 
 interface Note {
   id: string
   title: string
   content: string
+  organizedContent: string
   tags: string[]
   createdAt: string
   updatedAt: string
@@ -285,12 +287,12 @@ export function NotesManager() {
                 </div>
 
                 {/* Content Preview */}
-                <p 
-                  className="text-xs sm:text-sm text-muted-foreground line-clamp-3 cursor-pointer"
+                <div 
+                  className="text-xs sm:text-sm text-muted-foreground line-clamp-3 cursor-pointer prose prose-xs max-w-none"
                   onClick={() => handleViewNote(note)}
                 >
-                  {note.content}
-                </p>
+                  <ReactMarkdown>{note.organizedContent || note.content}</ReactMarkdown>
+                </div>
 
                 {/* Tags */}
                 {note.tags.length > 0 && (
