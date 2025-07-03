@@ -87,7 +87,8 @@ export function VoiceRecorder({ className }: VoiceRecorderProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          content: editedTranscription
+          content: editedTranscription,
+          isTranscription: true
         })
       })
       

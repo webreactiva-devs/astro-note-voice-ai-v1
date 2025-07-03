@@ -3,91 +3,13 @@ import { authenticateRequest, createUnauthorizedResponse, createBadRequestRespon
 import { validateNoteContent, sanitizeContent } from '@/lib/validation';
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limiter';
 import { database } from '@/lib/database';
-import { getConfig } from '@/lib/config';
+import { organizeIdeas, generateTitleAndTags } from '@/lib/ai-service';
 
 // Utility function to generate unique ID
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
-// Function to generate title using Groq
-async function generateTitle(content: string): Promise<string> {
-  const config = getConfig();
-  try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${config.GROQ_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'llama3-8b-8192',
-        messages: [
-          {
-            role: 'system',
-            content: 'Generate a concise, descriptive title (maximum 60 characters) for the following note content. Respond only with the title, no additional text.'
-          },
-          {
-            role: 'user',
-            content: content.substring(0, 1000) // Limit content for API efficiency
-          }
-        ],
-        max_tokens: 20,
-        temperature: 0.3,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to generate title');
-    }
-
-    const result = await response.json();
-    return result.choices[0]?.message?.content?.trim() || 'Nota de voz';
-  } catch (error) {
-    console.error('Error generating title:', error);
-    return 'Nota de voz';
-  }
-}
-
-// Function to generate tags using Groq
-async function generateTags(content: string): Promise<string[]> {
-  const config = getConfig();
-  try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${config.GROQ_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'llama3-8b-8192',
-        messages: [
-          {
-            role: 'system',
-            content: 'Generate 3-5 relevant tags for this note content. Return only the tags separated by commas, no additional text. Tags should be single words or short phrases in Spanish.'
-          },
-          {
-            role: 'user',
-            content: content.substring(0, 1000)
-          }
-        ],
-        max_tokens: 50,
-        temperature: 0.3,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to generate tags');
-    }
-
-    const result = await response.json();
-    const tagsString = result.choices[0]?.message?.content?.trim() || '';
-    return tagsString.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
-  } catch (error) {
-    console.error('Error generating tags:', error);
-    return [];
-  }
-}
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -109,7 +31,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const { content } = await request.json();
+    const { content, isTranscription = false } = await request.json();
 
     // Validate content
     const validation = validateNoteContent(content);
@@ -117,14 +39,18 @@ export const POST: APIRoute = async ({ request }) => {
       return createBadRequestResponse(validation.error!);
     }
 
-    // Sanitize content
-    const sanitizedContent = sanitizeContent(content);
+    // Process content based on whether it's a transcription or direct text
+    let processedContent = sanitizeContent(content);
+    
+    // If it's a transcription, organize the ideas first
+    if (isTranscription) {
+      console.log('Organizing transcription ideas...');
+      processedContent = await organizeIdeas(processedContent);
+    }
 
-    // Generate title and tags using Groq
-    const [title, tags] = await Promise.all([
-      generateTitle(content),
-      generateTags(content)
-    ]);
+    // Generate title and tags from the processed content
+    console.log('Generating title and tags...');
+    const { title, tags } = await generateTitleAndTags(processedContent);
 
     // Generate unique ID
     const noteId = generateId();
@@ -133,7 +59,7 @@ export const POST: APIRoute = async ({ request }) => {
     await database.execute({
       sql: `INSERT INTO notes (id, userId, title, content, tags, createdAt, updatedAt) 
             VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-      args: [noteId, user.id, title, sanitizedContent, JSON.stringify(tags)]
+      args: [noteId, user.id, title, processedContent, JSON.stringify(tags)]
     });
 
     return new Response(
@@ -142,7 +68,7 @@ export const POST: APIRoute = async ({ request }) => {
         note: {
           id: noteId,
           title,
-          content: sanitizedContent,
+          content: processedContent,
           tags,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
