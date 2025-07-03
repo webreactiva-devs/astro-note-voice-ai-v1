@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { UserDropdown } from "@/components/UserDropdown";
+import { Toaster } from "@/components/ui/toaster";
 
 // Redirect if not logged in
 if (!Astro.locals.user) {
@@ -23,15 +24,15 @@ const user = Astro.locals.user;
     <div class="min-h-screen bg-gray-50">
       <header class="bg-white shadow">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between items-center py-6">
-            <div class="flex items-center gap-6">
+          <div class="flex justify-between items-center py-4 sm:py-6">
+            <div class="flex items-center gap-2 sm:gap-6">
               <div>
-                <h1 class="text-3xl font-bold text-gray-900">AI Astro Voice</h1>
-                <p class="mt-1 text-sm text-gray-600">Grabación de Voz</p>
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">AI Astro Voice</h1>
+                <p class="mt-1 text-xs sm:text-sm text-gray-600">Grabación de Voz</p>
               </div>
             </div>
-            <div class="flex items-center gap-4">
-              <nav class="flex gap-4">
+            <div class="flex items-center gap-2 sm:gap-4">
+              <nav class="hidden sm:flex gap-4">
                 <a 
                   href="/dashboard" 
                   class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
@@ -45,19 +46,19 @@ const user = Astro.locals.user;
                   Mis Notas
                 </a>
               </nav>
-              <div class="h-6 w-px bg-gray-300"></div>
+              <div class="hidden sm:block h-6 w-px bg-gray-300"></div>
               <UserDropdown user={user} client:load />
             </div>
           </div>
         </div>
       </header>
 
-      <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 text-center">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">
+      <main class="max-w-4xl mx-auto py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
+        <div class="mb-6 sm:mb-8 text-center">
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
             Graba tu Nota de Voz
           </h2>
-          <p class="text-gray-600 max-w-2xl mx-auto">
+          <p class="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
             Graba hasta 2 minutos de audio. Podrás escuchar, descargar y transcribir tu grabación automáticamente.
           </p>
         </div>
@@ -69,12 +70,12 @@ const user = Astro.locals.user;
           />
         </div>
 
-        <div class="mt-8 text-center">
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto">
+        <div class="mt-6 sm:mt-8 text-center">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 max-w-2xl mx-auto">
             <h3 class="text-sm font-medium text-blue-900 mb-2">
               💡 Consejos para una mejor grabación
             </h3>
-            <ul class="text-sm text-blue-800 space-y-1">
+            <ul class="text-xs sm:text-sm text-blue-800 space-y-1 text-left">
               <li>• Graba en un ambiente silencioso</li>
               <li>• Habla claro y a una distancia adecuada del micrófono</li>
               <li>• Puedes pausar y reanudar la grabación cuando necesites</li>
@@ -83,6 +84,7 @@ const user = Astro.locals.user;
           </div>
         </div>
       </main>
+      <Toaster client:load />
     </div>
   </body>
 </html>

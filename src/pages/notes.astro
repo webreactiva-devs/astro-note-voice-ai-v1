@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { NotesManager } from "@/components/NotesManager";
 import { UserDropdown } from "@/components/UserDropdown";
+import { Toaster } from "@/components/ui/toaster";
 import { database } from "@/lib/database";
 
 // Redirect if not logged in
@@ -42,15 +43,15 @@ try {
     <div class="min-h-screen bg-gray-50">
       <header class="bg-white shadow">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between items-center py-6">
-            <div class="flex items-center gap-6">
+          <div class="flex justify-between items-center py-4 sm:py-6">
+            <div class="flex items-center gap-2 sm:gap-6">
               <div>
-                <h1 class="text-3xl font-bold text-gray-900">AI Astro Voice</h1>
-                <p class="mt-1 text-sm text-gray-600">Mis Notas de Voz</p>
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">AI Astro Voice</h1>
+                <p class="mt-1 text-xs sm:text-sm text-gray-600">Mis Notas de Voz</p>
               </div>
             </div>
-            <div class="flex items-center gap-4">
-              <nav class="flex gap-4">
+            <div class="flex items-center gap-2 sm:gap-4">
+              <nav class="hidden sm:flex gap-4">
                 <a 
                   href="/dashboard" 
                   class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
@@ -64,25 +65,26 @@ try {
                   Grabar
                 </a>
               </nav>
-              <div class="h-6 w-px bg-gray-300"></div>
+              <div class="hidden sm:block h-6 w-px bg-gray-300"></div>
               <UserDropdown user={user} client:load />
             </div>
           </div>
         </div>
       </header>
 
-      <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div class="mb-8">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">
+      <main class="max-w-7xl mx-auto py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
+        <div class="mb-6 sm:mb-8">
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
             Mis Notas de Voz
           </h2>
-          <p class="text-gray-600">
+          <p class="text-sm sm:text-base text-gray-600">
             Gestiona tus transcripciones y notas guardadas. Puedes buscar, filtrar y organizar tu contenido.
           </p>
         </div>
 
         <NotesManager client:load />
       </main>
+      <Toaster client:load />
     </div>
   </body>
 </html>
