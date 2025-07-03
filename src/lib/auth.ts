@@ -1,15 +1,16 @@
 import { betterAuth } from "better-auth";
 import { LibsqlDialect } from "@libsql/kysely-libsql";
+import { getConfig } from "./config";
 
-const useLocal = import.meta.env.USE_LOCAL_DB === "true";
+const config = getConfig();
 
-const dialect = useLocal 
+const dialect = config.USE_LOCAL_DB 
   ? new LibsqlDialect({
       url: "file:database/dev.db"
     })
   : new LibsqlDialect({
-      url: import.meta.env.TURSO_DATABASE_URL || "",
-      authToken: import.meta.env.TURSO_AUTH_TOKEN || "",
+      url: config.TURSO_DATABASE_URL!,
+      authToken: config.TURSO_AUTH_TOKEN!,
     });
 
 export const auth = betterAuth({
@@ -20,6 +21,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true
   },
-  secret: import.meta.env.BETTER_AUTH_SECRET,
-  baseURL: import.meta.env.BETTER_AUTH_URL || "http://localhost:4321"
+  secret: config.BETTER_AUTH_SECRET,
+  baseURL: config.BETTER_AUTH_URL
 });

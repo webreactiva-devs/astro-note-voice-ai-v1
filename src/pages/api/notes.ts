@@ -3,6 +3,7 @@ import { authenticateRequest, createUnauthorizedResponse, createBadRequestRespon
 import { validateNoteContent, sanitizeContent } from '@/lib/validation';
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limiter';
 import { database } from '@/lib/database';
+import { getConfig } from '@/lib/config';
 
 // Utility function to generate unique ID
 function generateId(): string {
@@ -11,11 +12,12 @@ function generateId(): string {
 
 // Function to generate title using Groq
 async function generateTitle(content: string): Promise<string> {
+  const config = getConfig();
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${import.meta.env.GROQ_API_KEY}`,
+        'Authorization': `Bearer ${config.GROQ_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -49,11 +51,12 @@ async function generateTitle(content: string): Promise<string> {
 
 // Function to generate tags using Groq
 async function generateTags(content: string): Promise<string[]> {
+  const config = getConfig();
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${import.meta.env.GROQ_API_KEY}`,
+        'Authorization': `Bearer ${config.GROQ_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({

@@ -1,10 +1,11 @@
 import { createClient } from "@libsql/client";
+import { getConfig } from "./config";
 
-const useLocal = import.meta.env.USE_LOCAL_DB === "true";
+const config = getConfig();
 
-export const database = useLocal
+export const database = config.USE_LOCAL_DB
   ? createClient({ url: "file:database/dev.db" })
   : createClient({
-      url: import.meta.env.TURSO_DATABASE_URL,
-      authToken: import.meta.env.TURSO_AUTH_TOKEN,
+      url: config.TURSO_DATABASE_URL!,
+      authToken: config.TURSO_AUTH_TOKEN!,
     });

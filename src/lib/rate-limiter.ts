@@ -3,6 +3,8 @@
  * For production, consider using Redis or a proper rate limiting service
  */
 
+import { getRateLimits } from './config';
+
 interface RateLimitEntry {
   count: number;
   resetTime: number;
@@ -13,24 +15,42 @@ interface RateLimitConfig {
   maxRequests: number; // Maximum requests per window
 }
 
-// Rate limit configurations
-export const RATE_LIMITS = {
-  // Transcription API - more restrictive due to cost
-  transcription: {
-    windowMs: 60 * 1000, // 1 minute
-    maxRequests: 5 // 5 transcriptions per minute
-  },
-  // Notes API - moderate restriction
-  notes: {
-    windowMs: 60 * 1000, // 1 minute
-    maxRequests: 30 // 30 requests per minute
-  },
-  // General API - lenient
-  general: {
-    windowMs: 60 * 1000, // 1 minute
-    maxRequests: 100 // 100 requests per minute
+// Get rate limits from configuration
+function createRateLimits() {
+  const limits = getRateLimits();
+  
+  return {
+    // Transcription API - more restrictive due to cost
+    transcription: {
+      windowMs: 60 * 1000, // 1 minute
+      maxRequests: limits.transcription
+    },
+    // Notes API - moderate restriction
+    notes: {
+      windowMs: 60 * 1000, // 1 minute
+      maxRequests: limits.notes
+    },
+    // General API - lenient
+    general: {
+      windowMs: 60 * 1000, // 1 minute
+      maxRequests: 100 // 100 requests per minute
+    }
+  } as const;
+}
+
+// Rate limit configurations with fallback for tests
+export const RATE_LIMITS = (() => {
+  try {
+    return createRateLimits();
+  } catch {
+    // Fallback for tests or missing config
+    return {
+      transcription: { windowMs: 60 * 1000, maxRequests: 5 },
+      notes: { windowMs: 60 * 1000, maxRequests: 30 },
+      general: { windowMs: 60 * 1000, maxRequests: 100 }
+    };
   }
-} as const;
+})();
 
 // In-memory store (use Redis in production)
 const rateLimitStore = new Map<string, RateLimitEntry>();

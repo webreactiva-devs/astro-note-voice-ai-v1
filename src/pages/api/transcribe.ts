@@ -2,8 +2,11 @@ import type { APIRoute } from 'astro';
 import { authenticateRequest, createUnauthorizedResponse, createBadRequestResponse, createServerErrorResponse, createRateLimitResponse } from '@/lib/middleware';
 import { validateAudioFile } from '@/lib/validation';
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limiter';
+import { getConfig } from '@/lib/config';
 
 export const POST: APIRoute = async ({ request }) => {
+  const config = getConfig();
+  
   try {
     // Authenticate request
     const user = await authenticateRequest(request);
@@ -59,7 +62,7 @@ export const POST: APIRoute = async ({ request }) => {
       const groqResponse = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${import.meta.env.GROQ_API_KEY}`,
+          'Authorization': `Bearer ${config.GROQ_API_KEY}`,
         },
         body: groqFormData,
         signal: controller.signal,

@@ -2,6 +2,8 @@
  * Audio file validation utilities
  */
 
+import { getMaxAudioFileSize } from './config';
+
 // Allowed audio MIME types
 const ALLOWED_AUDIO_TYPES = [
   'audio/webm',
@@ -15,8 +17,15 @@ const ALLOWED_AUDIO_TYPES = [
   'audio/mp3'
 ] as const;
 
-// Maximum file size (10MB)
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+// Get maximum file size from configuration
+function getMaxFileSize(): number {
+  try {
+    return getMaxAudioFileSize() * 1024 * 1024; // Convert MB to bytes
+  } catch {
+    // Fallback for tests or missing config
+    return 10 * 1024 * 1024; // 10MB default
+  }
+}
 
 // Maximum duration (2 minutes + buffer)
 const MAX_DURATION_SECONDS = 130; // 2 minutes + 10 seconds buffer
@@ -44,10 +53,11 @@ export function validateAudioFile(file: File): AudioValidationResult {
   }
 
   // Validate file size
-  if (file.size > MAX_FILE_SIZE) {
+  const maxSize = getMaxFileSize();
+  if (file.size > maxSize) {
     return {
       isValid: false,
-      error: `File size too large. Maximum allowed: ${MAX_FILE_SIZE / (1024 * 1024)}MB`
+      error: `File size too large. Maximum allowed: ${maxSize / (1024 * 1024)}MB`
     };
   }
 
@@ -89,10 +99,11 @@ export function validateAudioBlob(blob: Blob): AudioValidationResult {
   }
 
   // Validate blob size
-  if (blob.size > MAX_FILE_SIZE) {
+  const maxSize = getMaxFileSize();
+  if (blob.size > maxSize) {
     return {
       isValid: false,
-      error: `Audio data too large. Maximum allowed: ${MAX_FILE_SIZE / (1024 * 1024)}MB`
+      error: `Audio data too large. Maximum allowed: ${maxSize / (1024 * 1024)}MB`
     };
   }
 

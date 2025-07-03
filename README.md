@@ -1,6 +1,61 @@
-# AI ASTRO VOICE
+# 🎙️ AI Astro Voice
 
-{add more content here}
+Aplicación de notas de voz con transcripción automática usando IA, construida con Astro 5, React 19 y Better Auth.
+
+## 🚀 Inicio Rápido
+
+### 1. Configuración Inicial
+```bash
+# Clonar repositorio
+git clone <repo-url>
+cd ai-astro-voice-manual
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus valores
+```
+
+### 2. Variables de Entorno Requeridas
+```bash
+# Secret para autenticación (generar uno seguro)
+BETTER_AUTH_SECRET=tu-secret-super-seguro-de-32-caracteres-minimo
+
+# API de Groq para transcripción
+GROQ_API_KEY=gsk_tu-api-key-de-groq
+
+# Base de datos (local para desarrollo)
+USE_LOCAL_DB=true
+```
+
+### 3. Configurar Base de Datos
+```bash
+# Crear directorio de base de datos
+mkdir -p database
+
+# Ejecutar migraciones de BetterAuth
+npx @better-auth/cli migrate --y
+
+# Ejecutar migraciones personalizadas
+npm run migrate
+```
+
+### 4. Ejecutar en Desarrollo
+```bash
+npm run dev
+```
+
+¡La aplicación estará disponible en `http://localhost:4321`! 🎉
+
+## 📖 Documentación Completa
+
+- 📝 **[Especificaciones del Proyecto](docs/project-specs.md)** - Requisitos técnicos completos
+- 📋 **[Plan de Desarrollo](docs/project-plan.md)** - Roadmap y progreso
+- 🚀 **[Guía de Despliegue](docs/deployment.md)** - Configuración para producción
+- 🧪 **[Testing](TESTING.md)** - Información sobre tests
+- 🔐 **[BetterAuth Setup](docs/betterauth.md)** - Configuración de autenticación
 
 ## Configuración e inicialización de BetterAuth
 
