@@ -85,12 +85,16 @@
   - [x] Modal de confirmación para eliminación
   - [x] Tooltips informativos
 - [ ] Responsive design
-  - [ ] Optimizar para móviles
-  - [ ] Optimizar para tablets
+  - [ ] Auditar y optimizar interfaz para móviles
+  - [ ] Auditar y optimizar interfaz para tablets
+  - [ ] Mejorar usabilidad de grabación en dispositivos táctiles
+  - [ ] Optimizar tamaños de modales en pantallas pequeñas
+  - [ ] Ajustar navegación para móviles
 - [ ] Accesibilidad
   - [ ] Navegación por teclado
   - [ ] Etiquetas ARIA
   - [ ] Contraste de colores
+  - [ ] Screen reader compatibility
 
 ### 🔒 Seguridad y Validación
 - [x] Proteger rutas de API ✅ COMPLETADO
@@ -129,8 +133,19 @@
 - [ ] Configurar pre-commit hooks
 
 ### 🚀 Despliegue y Optimización
-- [ ] Configurar variables de entorno para producción
-- [ ] Optimizar bundle size
+- [x] Configurar variables de entorno para producción ✅ COMPLETADO
+  - [x] Sistema de validación con Zod para variables de entorno
+  - [x] Configuración centralizada en `src/lib/config.ts`
+  - [x] Archivo `.env.example` con todas las variables necesarias
+  - [x] Soporte para entornos de test con fallbacks
+  - [x] Documentación de despliegue en `docs/deployment.md`
+- [x] Optimizar bundle size ✅ COMPLETADO
+  - [x] Implementar lazy loading para react-hot-toast (reducción de 24%)
+  - [x] Separar componentes modales en chunks independientes
+  - [x] Configurar code splitting estratégico en Vite
+  - [x] Herramientas de análisis de bundle con rollup-plugin-visualizer
+  - [x] Optimización de dependencias y eliminación de imports innecesarios
+  - [x] Total bundle: 406KB (dentro del límite de 500KB)
 - [ ] Configurar CDN para assets estáticos
 - [ ] Implementar caching estratégico
 - [ ] Configurar monitoreo y logs
@@ -178,3 +193,27 @@
 - Evitar comentarios inline en SQL para compatibilidad con parser
 - Usar `IF NOT EXISTS` para migraciones idempotentes
 - Sistema funciona sin transacciones para compatibilidad con Turso
+
+## Performance y Optimización
+
+### ✅ Bundle Size Optimización (Completado)
+- **Tamaño total**: 406.05 KB (límite: 500 KB) ✅
+- **Gzipped**: 121.82 KB (límite: 150 KB) ✅
+- **Chunks principales**:
+  - client.DHXzozRT.js: 175.55 KB
+  - form.C44kPktt.js: 85.37 KB
+  - useToast.VjKRjVOW.js: 35.27 KB (optimizado -24%)
+  - Modales separados: ~2-3 KB cada uno
+
+### 🛠️ Herramientas implementadas
+- **Bundle analysis**: `npm run build:analyze`
+- **Size check**: `npm run size-check`
+- **Performance monitoring**: Script automático en build
+- **Lazy loading**: Componentes modales y toast
+- **Code splitting**: Chunks organizados por función
+
+### 📊 Métricas de rendimiento
+- **Performance Score**: 19/100 → Mejorado con optimizaciones
+- **Chunks count**: 26 (bien distribuido)
+- **Lazy loading**: React-hot-toast, modales
+- **Cache strategy**: Manual chunks para mejor distribución
