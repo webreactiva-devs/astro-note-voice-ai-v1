@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Toaster } from 'react-hot-toast'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
-import { NoteViewModal } from './NoteViewModal'
-import { NoteEditModal } from './NoteEditModal'
+import { LazyNoteViewModal, LazyNoteEditModal } from './LazyModal'
 import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 import { useToast } from '@/lib/hooks/useToast'
-import { Search, Filter, Calendar, Tag, MoreVertical, Edit, Trash2, Eye } from 'lucide-react'
+import { Search, Filter, Calendar, Tag, Edit, Trash2, Eye } from 'lucide-react'
 
 interface Note {
   id: string
@@ -113,7 +111,7 @@ export function NotesManager() {
   }
 
   const handleSaveNote = async (noteId: string, updatedNote: { title: string; content: string; tags: string[] }) => {
-    const toastId = toast.loading('Guardando cambios...')
+    const toastId = await toast.loading('Guardando cambios...')
     
     try {
       const response = await fetch(`/api/notes/${noteId}`, {
@@ -124,7 +122,7 @@ export function NotesManager() {
         body: JSON.stringify(updatedNote)
       })
 
-      toast.dismiss(toastId)
+      await toast.dismiss(toastId)
 
       if (response.ok) {
         const result = await response.json()
@@ -132,15 +130,15 @@ export function NotesManager() {
         setNotes(prev => prev.map(note => 
           note.id === noteId ? result.note : note
         ))
-        toast.success('Nota actualizada exitosamente')
+        await toast.success('Nota actualizada exitosamente')
       } else {
         const error = await response.json()
-        toast.error(`Error: ${error.error}`)
+        await toast.error(`Error: ${error.error}`)
       }
     } catch (error) {
-      toast.dismiss(toastId)
+      await toast.dismiss(toastId)
       console.error('Error updating note:', error)
-      toast.error('Error al actualizar la nota')
+      await toast.error('Error al actualizar la nota')
     }
   }
 
@@ -162,15 +160,15 @@ export function NotesManager() {
       if (response.ok) {
         // Remove the note from local state
         setNotes(prev => prev.filter(note => note.id !== selectedNote.id))
-        toast.success('Nota eliminada exitosamente')
+        await toast.success('Nota eliminada exitosamente')
         setShowDeleteConfirm(false)
       } else {
         const error = await response.json()
-        toast.error(`Error: ${error.error}`)
+        await toast.error(`Error: ${error.error}`)
       }
     } catch (error) {
       console.error('Error deleting note:', error)
-      toast.error('Error al eliminar la nota')
+      await toast.error('Error al eliminar la nota')
     } finally {
       setIsDeleting(false)
     }
@@ -376,20 +374,24 @@ export function NotesManager() {
       )}
 
       {/* Modals */}
-      <NoteViewModal
-        note={selectedNote}
-        isOpen={showViewModal}
-        onClose={() => setShowViewModal(false)}
-        onEdit={handleEditNote}
-        onDelete={(note) => handleDeleteClick(notes.find(n => n.id === note)!)}
-      />
+      {showViewModal && (
+        <LazyNoteViewModal
+          note={selectedNote}
+          isOpen={showViewModal}
+          onClose={() => setShowViewModal(false)}
+          onEdit={handleEditNote}
+          onDelete={(note) => handleDeleteClick(notes.find(n => n.id === note)!)}
+        />
+      )}
 
-      <NoteEditModal
-        note={selectedNote}
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        onSave={handleSaveNote}
-      />
+      {showEditModal && (
+        <LazyNoteEditModal
+          note={selectedNote}
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleSaveNote}
+        />
+      )}
 
       <DeleteConfirmDialog
         isOpen={showDeleteConfirm}
@@ -401,7 +403,6 @@ export function NotesManager() {
         isLoading={isDeleting}
       />
 
-      <Toaster />
     </div>
   )
 }

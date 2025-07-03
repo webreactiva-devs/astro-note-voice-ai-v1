@@ -1,7 +1,12 @@
-import toast from 'react-hot-toast'
+// Lazy load toast to reduce initial bundle size
+const getToast = async () => {
+  const { default: toast } = await import('react-hot-toast');
+  return toast;
+};
 
 export const useToast = () => {
-  const success = (message: string) => {
+  const success = async (message: string) => {
+    const toast = await getToast();
     toast.success(message, {
       duration: 4000,
       position: 'bottom-right',
@@ -12,7 +17,8 @@ export const useToast = () => {
     })
   }
 
-  const error = (message: string) => {
+  const error = async (message: string) => {
+    const toast = await getToast();
     toast.error(message, {
       duration: 5000,
       position: 'bottom-right',
@@ -23,13 +29,15 @@ export const useToast = () => {
     })
   }
 
-  const loading = (message: string) => {
+  const loading = async (message: string) => {
+    const toast = await getToast();
     return toast.loading(message, {
       position: 'bottom-right',
     })
   }
 
-  const dismiss = (toastId: string) => {
+  const dismiss = async (toastId: string) => {
+    const toast = await getToast();
     toast.dismiss(toastId)
   }
 
