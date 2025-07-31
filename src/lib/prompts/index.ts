@@ -116,7 +116,7 @@ export function getPromptConfig(promptName: string) {
   const prompt = loadPrompt(promptName);
 
   return {
-    model: prompt.config.model || "mistral-saba-24b",
+    model: prompt.config.model || "llama-3.3-70b-versatile",
     max_tokens: prompt.config.max_tokens || 100,
     temperature: prompt.config.temperature || 0.3,
   };

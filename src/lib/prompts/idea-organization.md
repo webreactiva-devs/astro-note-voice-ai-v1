@@ -1,5 +1,5 @@
 ---
-model: mistral-saba-24b
+model: llama-3.3-70b-versatile
 max_tokens: 800
 temperature: 0.4
 content_limit: 2000
