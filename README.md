@@ -1,221 +1,72 @@
-# 🎙️ AI Astro Voice
+🇪🇸 **[Documentación en español -- Reto Estrategas de la IA](README.es.md)** 
 
-Aplicación de notas de voz con transcripción automática usando IA, construida con Astro 5, React 19 y Better Auth.
+# 🎙️ Astro Note Voice AI
 
-## 🚀 Inicio Rápido
+Voice notes application with automatic AI transcription built with Astro 5, React 19, and Better Auth.
 
-### 1. Configuración Inicial
+## 🛠️ Tech Stack
+
+- **Framework**: Astro 5 with React 19 integration
+- **Language**: TypeScript (strict configuration)
+- **Styling**: Tailwind CSS 4 via Vite plugin
+- **Database**: libSQL (SQLite local + Turso for production)
+- **Authentication**: Better Auth
+- **AI**: Groq API for transcription and text processing
+- **UI Components**: Radix UI + Shadcn/ui
+- **Testing**: Vitest + React Testing Library
+
+## 🚀 Quick Start
+
+### 1. Clone and Install
 ```bash
-# Clonar repositorio
-git clone <repo-url>
-cd ai-astro-voice-manual
-
-# Instalar dependencias
+git clone https://github.com/webreactiva-devs/astro-note-voice-ai-v1.git
+cd astro-note-voice-ai-v1
 npm install
-
-# Configurar variables de entorno
-cp .env.example .env
-# Editar .env con tus valores
 ```
 
-### 2. Variables de Entorno Requeridas
+### 2. Environment Variables
 ```bash
-# Secret para autenticación (generar uno seguro)
-BETTER_AUTH_SECRET=tu-secret-super-seguro-de-32-caracteres-minimo
+cp .env.example .env
+```
 
-# API de Groq para transcripción
-GROQ_API_KEY=gsk_tu-api-key-de-groq
+Required variables:
+```bash
+# Authentication secret (generate a secure one)
+BETTER_AUTH_SECRET=your-32-character-secret-here
 
-# Base de datos (local para desarrollo)
+# Groq API key for AI transcription
+GROQ_API_KEY=gsk_your-groq-api-key
+
+# Database mode (local for development)
 USE_LOCAL_DB=true
 ```
 
-### 3. Configurar Base de Datos
+### 3. Database Setup
 ```bash
-# Crear directorio de base de datos
+# Create database directory
 mkdir -p database
 
-# Ejecutar migraciones de BetterAuth
+# Run Better Auth migrations
 npx @better-auth/cli migrate --y
 
-# Ejecutar migraciones personalizadas
+# Run custom migrations
 npm run migrate
 ```
 
-### 4. Ejecutar en Desarrollo
+### 4. Development
 ```bash
 npm run dev
 ```
 
-¡La aplicación estará disponible en `http://localhost:4321`! 🎉
+Application available at `http://localhost:4321`
 
-## 📖 Documentación Completa
+## 🤖 AI Prompts
 
-- 📝 **[Especificaciones del Proyecto](docs/project-specs.md)** - Requisitos técnicos completos
-- 📋 **[Plan de Desarrollo](docs/project-plan.md)** - Roadmap y progreso
-- 🚀 **[Guía de Despliegue](docs/deployment.md)** - Configuración para producción
-- 🧪 **[Testing](TESTING.md)** - Información sobre tests
-- 🔐 **[BetterAuth Setup](docs/betterauth.md)** - Configuración de autenticación
+The application uses structured prompts for AI processing located in `src/lib/prompts/`:
+- **[Title Generation](src/lib/prompts/title-generation.md)** - Generates concise titles for voice notes
+- **[Tags Generation](src/lib/prompts/tags-generation.md)** - Creates relevant tags for categorization  
+- **[Idea Organization](src/lib/prompts/idea-organization.md)** - Organizes content for better readability
 
-## Configuración e inicialización de BetterAuth
+## 📚 Documentation
 
-Este proyecto utiliza [BetterAuth](https://better-auth.dev/) para la autenticación por email y contraseña. Aquí te explicamos cómo inicializarlo y aplicar las migraciones necesarias en tu base de datos libSQL.
-
-### Instalación de dependencias
-
-Primero, instala las dependencias necesarias:
-
-```bash
-npm install better-auth @libsql/kysely-libsql @better-auth/cli
-```
-
----
-
-### Generación del secret para BetterAuth
-
-BetterAuth necesita un secret para firmar las sesiones. Puedes generar uno con el siguiente comando:
-
-```bash
-npx @better-auth/cli secret
-```
-
-Esto te generará una línea similar a esta:
-
-```bash
-BETTER_AUTH_SECRET=c01fdfc5c2b1847a9ddd3474d515732b0e3cf49d38163f97f93063bb5d0123a6
-```
-
-Añádela en tu archivo `.env`:
-
-```dotenv
-# Better Auth Configuration
-BETTER_AUTH_SECRET=c01fdfc5c2b1847a9ddd3474d515732b0e3cf49d38163f97f93063bb5d0123a6
-BETTER_AUTH_URL=http://localhost:4321
-```
-
-> La URL es solo para desarrollo local. Ajusta según tu entorno.
-
----
-
-### Aplicación de migraciones
-
-BetterAuth incluye su propio sistema de migraciones para crear las tablas necesarias (usuarios, sesiones, etc.) dentro de tu base de datos libSQL.
-
-Para ver un resumen previo de los cambios que se van a aplicar:
-
-```bash
-npx @better-auth/cli migrate
-```
-
-Si quieres aplicar directamente las migraciones sin confirmación interactiva:
-
-```bash
-npx @better-auth/cli migrate --y
-```
-
-Esto creará las tablas necesarias como `users`, con campos como `name`, `email`, `emailVerified`, `image`, `createdAt` y `updatedAt`.
-
----
-
-### Resumen rápido de comandos
-
-| Acción                     | Comando                                                          |
-| -------------------------- | ---------------------------------------------------------------- |
-| Instalar dependencias      | `npm install better-auth @libsql/kysely-libsql @better-auth/cli` |
-| Generar secret             | `npx @better-auth/cli secret`                                    |
-| Ver migraciones pendientes | `npx @better-auth/cli migrate`                                   |
-| Aplicar migraciones        | `npx @better-auth/cli migrate --y`                               |
-
----
-
-## Sistema de Migraciones Personalizadas
-
-Además de las migraciones de BetterAuth, este proyecto incluye un sistema de migraciones incrementales para gestionar cambios en la base de datos de manera ordenada.
-
-### Estructura de migraciones
-
-Las migraciones se almacenan en `database/migrations/` con el formato:
-```
-001_create_notes_table.sql
-002_add_user_preferences.sql
-003_add_indexes.sql
-```
-
-### Comandos de migración
-
-```bash
-# Ejecutar migraciones pendientes
-npm run migrate
-
-# Ver estado de migraciones
-npm run migrate:status
-
-# Limpiar registro de migración específica (para re-ejecutar)
-node scripts/clean-migration.js <filename>
-
-# Ejecutar directamente con Node.js
-node scripts/migrate.js
-node scripts/migrate.js status
-```
-
-### Crear una nueva migración
-
-1. Crea un archivo SQL en `database/migrations/` con formato `XXX_description.sql`
-2. Utiliza numeración secuencial (001, 002, 003...)
-3. Incluye comentarios descriptivos en el archivo
-
-Ejemplo de migración:
-```sql
--- Migration: Add user preferences table
--- Created: 2025-07-02
--- Description: Stores user configuration and preferences
-
-CREATE TABLE IF NOT EXISTS user_preferences (
-  id TEXT PRIMARY KEY,
-  userId TEXT NOT NULL,
-  theme TEXT DEFAULT 'light',
-  language TEXT DEFAULT 'es',
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS idx_user_preferences_userId ON user_preferences(userId);
-```
-
-### Características del sistema
-
-- ✅ **Incremental**: Solo ejecuta migraciones no aplicadas
-- ✅ **Tracking**: Registra migraciones ejecutadas en `migrations_log`
-- ✅ **Checksum**: Detecta cambios en archivos ya ejecutados
-- ✅ **Compatible**: Funciona con SQLite local y Turso cloud
-- ✅ **Limpieza**: Herramienta para limpiar registros y re-ejecutar migraciones
-- ✅ **Multi-entorno**: Respeta la configuración `USE_LOCAL_DB`
-
-### Solución de problemas
-
-Si una migración falla o necesitas re-ejecutarla:
-
-```bash
-# 1. Limpiar el registro de la migración fallida
-node scripts/clean-migration.js 001_create_notes_table.sql
-
-# 2. Verificar que está marcada como pendiente
-npm run migrate:status
-
-# 3. Ejecutar nuevamente
-npm run migrate
-```
-
-**Notas importantes:**
-- El sistema respeta `USE_LOCAL_DB` - cambia entre SQLite local y Turso
-- Evita comentarios inline en SQL (`--`) ya que pueden romper el parsing
-- Cada migración debe ser idempotente (usar `IF NOT EXISTS`)
-
-### Resumen de comandos completos
-
-| Acción                          | Comando                                 |
-| ------------------------------- | --------------------------------------- |
-| Migraciones BetterAuth          | `npx @better-auth/cli migrate --y`     |
-| Migraciones personalizadas      | `npm run migrate`                       |
-| Estado migraciones personalizadas | `npm run migrate:status`              |
-| Limpiar migración específica    | `node scripts/clean-migration.js <file>` |
+Comprehensive documentation available in the **[docs/](docs/)** folder covering architecture, specifications, development plan, and deployment guides.
