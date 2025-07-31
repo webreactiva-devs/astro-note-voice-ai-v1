@@ -15,18 +15,18 @@ const user = Astro.locals.user;
 // Check if user has any notes, if not redirect to record first
 try {
   const result = await database.execute({
-    sql: 'SELECT COUNT(*) as count FROM notes WHERE userId = ?',
-    args: [user.id]
+    sql: "SELECT COUNT(*) as count FROM notes WHERE userId = ?",
+    args: [user.id],
   });
-  
+
   const count = Number(result.rows[0]?.count || 0);
-  
+
   // If user has no notes, redirect to record page
   if (count === 0) {
     return Astro.redirect("/record");
   }
 } catch (error) {
-  console.error('Error checking note count:', error);
+  console.error("Error checking note count:", error);
   // Continue to load the page if there's an error
 }
 ---
@@ -37,7 +37,7 @@ try {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Mis Notas - AI Astro Voice</title>
+    <title>Mis Notas - Astro Note Voice AI</title>
   </head>
   <body>
     <div class="min-h-screen bg-gray-50">
@@ -46,20 +46,26 @@ try {
           <div class="flex justify-between items-center py-4 sm:py-6">
             <div class="flex items-center gap-2 sm:gap-6">
               <div>
-                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">AI Astro Voice</h1>
-                <p class="mt-1 text-xs sm:text-sm text-gray-600">Mis Notas de Voz</p>
+                <h1
+                  class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900"
+                >
+                  Astro Note Voice AI
+                </h1>
+                <p class="mt-1 text-xs sm:text-sm text-gray-600">
+                  Mis Notas de Voz
+                </p>
               </div>
             </div>
             <div class="flex items-center gap-2 sm:gap-4">
               <nav class="hidden sm:flex gap-4">
-                <a 
-                  href="/dashboard" 
+                <a
+                  href="/dashboard"
                   class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   Dashboard
                 </a>
-                <a 
-                  href="/record" 
+                <a
+                  href="/record"
                   class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   Grabar
@@ -78,7 +84,8 @@ try {
             Mis Notas de Voz
           </h2>
           <p class="text-sm sm:text-base text-gray-600">
-            Gestiona tus transcripciones y notas guardadas. Puedes buscar, filtrar y organizar tu contenido.
+            Gestiona tus transcripciones y notas guardadas. Puedes buscar,
+            filtrar y organizar tu contenido.
           </p>
         </div>
 

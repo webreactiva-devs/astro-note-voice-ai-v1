@@ -17,7 +17,7 @@ const user = Astro.locals.user;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Mi Perfil - AI Astro Voice</title>
+    <title>Mi Perfil - Astro Note Voice AI</title>
   </head>
   <body>
     <div class="min-h-screen bg-gray-50">
@@ -26,26 +26,30 @@ const user = Astro.locals.user;
           <div class="flex justify-between items-center py-4 sm:py-6">
             <div class="flex items-center gap-2 sm:gap-6">
               <div>
-                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">AI Astro Voice</h1>
+                <h1
+                  class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900"
+                >
+                  Astro Note Voice AI
+                </h1>
                 <p class="mt-1 text-xs sm:text-sm text-gray-600">Mi Perfil</p>
               </div>
             </div>
             <div class="flex items-center gap-2 sm:gap-4">
               <nav class="hidden sm:flex gap-4">
-                <a 
-                  href="/dashboard" 
+                <a
+                  href="/dashboard"
                   class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   Dashboard
                 </a>
-                <a 
-                  href="/record" 
+                <a
+                  href="/record"
                   class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   Grabar
                 </a>
-                <a 
-                  href="/notes" 
+                <a
+                  href="/notes"
                   class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   Mis Notas
@@ -60,12 +64,8 @@ const user = Astro.locals.user;
 
       <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="mb-8">
-          <h2 class="text-2xl font-bold text-gray-900 mb-2">
-            Mi Perfil
-          </h2>
-          <p class="text-gray-600">
-            Información de tu cuenta y configuración.
-          </p>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Mi Perfil</h2>
+          <p class="text-gray-600">Información de tu cuenta y configuración.</p>
         </div>
 
         <UserProfile user={user} client:load />

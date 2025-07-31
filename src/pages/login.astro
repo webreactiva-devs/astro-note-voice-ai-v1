@@ -14,13 +14,15 @@ if (Astro.locals.user) {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Iniciar Sesión - AI Astro Voice</title>
+    <title>Iniciar Sesión - Astro Note Voice AI</title>
   </head>
   <body>
-    <main class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <main
+      class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+    >
       <div class="max-w-md w-full">
         <div class="text-center mb-8">
-          <h1 class="text-3xl font-bold text-gray-900">AI Astro Voice</h1>
+          <h1 class="text-3xl font-bold text-gray-900">Astro Note Voice AI</h1>
           <p class="mt-2 text-gray-600">Bienvenido de vuelta</p>
         </div>
         <LoginForm client:load />

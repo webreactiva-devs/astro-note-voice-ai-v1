@@ -1,6 +1,6 @@
-# 🏗️ Arquitectura del Proyecto - AI Astro Voice
+# 🏗️ Arquitectura del Proyecto - Astro Note Voice AI
 
-Este documento describe la arquitectura completa del proyecto AI Astro Voice, desarrollado durante el Reto Estrategas de la IA de Web Reactiva.
+Este documento describe la arquitectura completa del proyecto Astro Note Voice AI, desarrollado durante el Reto Estrategas de la IA de Web Reactiva.
 
 ## 📋 Tabla de Contenidos
 
