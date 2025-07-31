@@ -7,9 +7,12 @@ import { z } from "zod";
 // Schema for database variables
 const databaseSchema = z.object({
   USE_LOCAL_DB: z
-    .string()
+    .union([z.string(), z.boolean()])
     .default("true")
-    .transform((val) => val === "true"),
+    .transform((val) => {
+      if (typeof val === "boolean") return val;
+      return val === "true";
+    }),
   TURSO_DATABASE_URL: z.string().optional(),
   TURSO_AUTH_TOKEN: z.string().optional(),
 });
