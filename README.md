@@ -4,6 +4,12 @@
 
 Voice notes application with automatic AI transcription built with Astro 5, React 19, and Better Auth.
 
+
+
+https://github.com/user-attachments/assets/869c7720-b245-491f-aae2-9163b45495b5
+
+
+
 ## 🛠️ Tech Stack
 
 - **Framework**: Astro 5 with React 19 integration
