@@ -4,6 +4,42 @@
 
 Este repositorio contiene el proyecto completo desarrollado paso a paso en el Reto Estrategas de la IA, donde construimos una aplicación de notas de voz con transcripción automática usando inteligencia artificial.
 
+## Workflow principal del usuario
+
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant Frontend
+    participant Backend_IA as "Backend / IA"
+
+    Usuario->>Frontend: 1. Visita la página de inicio
+    Usuario->>Frontend: 2. Clic en 'Iniciar Sesión'
+    Frontend->>Usuario: Muestra formulario de login
+    Usuario->>Frontend: 3. Envía credenciales
+    Frontend->>Backend_IA: POST /api/login (credentials)
+    Backend_IA-->>Frontend: Responde con token de sesión
+    Frontend-->>Usuario: Redirige al Dashboard de grabación
+
+    Usuario->>Frontend: 4. Graba audio y lo detiene
+    Frontend-->>Usuario: Muestra el audio grabado
+
+    Usuario->>Frontend: 5. Clic en 'Transcribir Audio'
+    Frontend->>Backend_IA: POST /api/transcribe (audioBlob)
+    Backend_IA-->>Frontend: Responde con el texto de la transcripción
+    Frontend-->>Usuario: Muestra la transcripción en un modal
+
+    Usuario->>Frontend: 6. Clic en 'Guardar como Nota'
+    Frontend->>Backend_IA: POST /api/notes (transcriptionText)
+    note right of Backend_IA: La IA procesa el texto:<br/>- Genera título<br/>- Crea resumen<br/>- Extrae tags<br/>- Formatea contenido
+    Backend_IA-->>Frontend: Responde { status: 'Nota guardada' }
+    Frontend-->>Usuario: Muestra notificación de éxito
+
+    Usuario->>Frontend: 7. Va a 'Mis Notas'
+    Frontend->>Backend_IA: GET /api/notes
+    Backend_IA-->>Frontend: Devuelve lista de notas (incluida la nueva)
+    Frontend-->>Usuario: Muestra la nota procesada y enriquecida
+```
+
 ## 🎯 Contexto del Proyecto
 
 Esta aplicación fue creada como **proyecto formativo** para aprender y practicar la integración de IA en aplicaciones web modernas. No es un producto comercial, sino una demostración práctica de cómo implementar funcionalidades de IA en un stack tecnológico actual.
