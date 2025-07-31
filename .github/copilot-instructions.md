@@ -87,6 +87,7 @@ npm run test:integration          # Full app flow tests
 2. **Database errors**: Ensure migrations run (`npm run migrate` + auth migrations)
 3. **Audio recording fails**: Browser permissions and MediaRecorder API support
 4. **Rate limiting**: Built into `/src/lib/rate-limiter.ts` for API protection
+5. **Logout 500 error**: Always use `authClient.signOut()` instead of manual fetch to `/api/auth/sign-out`
 
 ## Testing Strategy
 

@@ -1,47 +1,46 @@
-import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, User, LogOut, Mic, FileText, Home } from 'lucide-react'
+import { useState, useRef, useEffect } from "react";
+import { ChevronDown, User, LogOut, Mic, FileText, Home } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 interface UserDropdownProps {
   user: {
-    id: string
-    name?: string
-    email: string
-  }
-  showNavigation?: boolean
+    id: string;
+    name?: string;
+    email: string;
+  };
+  showNavigation?: boolean;
 }
 
-export function UserDropdown({ user, showNavigation = false }: UserDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+export function UserDropdown({
+  user,
+  showNavigation = false,
+}: UserDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/auth/sign-out', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      
-      if (response.ok) {
-        window.location.href = '/login'
-      }
+      await authClient.signOut();
+      window.location.href = "/login";
     } catch (error) {
-      console.error('Error logging out:', error)
+      console.error("Error logging out:", error);
     }
-  }
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -51,7 +50,9 @@ export function UserDropdown({ user, showNavigation = false }: UserDropdownProps
       >
         <span className="hidden sm:inline">{user.name || user.email}</span>
         <span className="sm:hidden">Menú</span>
-        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
@@ -99,5 +100,5 @@ export function UserDropdown({ user, showNavigation = false }: UserDropdownProps
         </div>
       )}
     </div>
-  )
+  );
 }
