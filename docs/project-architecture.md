@@ -29,9 +29,9 @@ graph TB
         end
         
         subgraph "API Layer"
-            AuthAPI[/api/auth/*]
-            TranscribeAPI[/api/transcribe]
-            NotesAPI[/api/notes]
+            AuthAPI[api-auth]
+            TranscribeAPI[api-transcribe]
+            NotesAPI[api-notes]
             Middleware[Auth Middleware]
         end
         
