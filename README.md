@@ -8,7 +8,43 @@ Voice notes application with automatic AI transcription built with Astro 5, Reac
 
 https://github.com/user-attachments/assets/869c7720-b245-491f-aae2-9163b45495b5
 
+## User Workflow
 
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant Backend_AI as "Backend / AI"
+
+    User->>Frontend: 1. Visits the homepage
+    User->>Frontend: 2. Clicks on 'Log In'
+    Frontend->>User: Displays login form
+    User->>Frontend: 3. Submits credentials
+    Frontend->>Backend_AI: POST /api/login (credentials)
+    Backend_AI-->>Frontend: Responds with session token
+    Frontend-->>User: Redirects to the recording Dashboard
+
+    User->>Frontend: 4. Records audio and stops it
+    Frontend-->>User: Displays the recorded audio
+
+    User->>Frontend: 5. Clicks on 'Transcribe Audio'
+    Frontend->>Backend_AI: POST /api/transcribe (audioBlob)
+    Backend_AI-->>Frontend: Responds with the transcription text
+    Frontend-->>User: Displays the transcription in a modal
+
+    User->>Frontend: 6. Clicks on 'Save as Note'
+    Frontend->>Backend_AI: POST /api/notes (transcriptionText)
+    note right of Backend_AI: The AI processes the text:<br/>- Generates title<br/>- Creates summary<br/>- Extracts tags<br/>- Formats content
+    Backend_AI-->>Frontend: Responds { status: 'Note saved' }
+    Frontend-->>User: Displays success notification
+
+    User->>Frontend: 7. Goes to 'My Notes'
+    Frontend->>Backend_AI: GET /api/notes
+    Backend_AI-->>Frontend: Returns list of notes (including the new one)
+    Frontend-->>User: Displays the processed and enriched note
+
+
+```
 
 ## 🛠️ Tech Stack
 
